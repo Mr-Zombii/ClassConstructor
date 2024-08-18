@@ -7,6 +7,7 @@ import com.github.puzzle.cc.parsing.containers.Attributes;
 import com.github.puzzle.cc.parsing.containers.ConstantPool;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class AttributeInfo {
@@ -14,7 +15,7 @@ public class AttributeInfo {
     int nameIndex;
     int length;
 
-    public AttributeInfo(int nameIndex, int length, DataInputStream inp) throws IOException {
+    public AttributeInfo(int nameIndex, int length, DataInputStream inp) {
         this.nameIndex = nameIndex;
         this.length = length;
     }
@@ -38,8 +39,8 @@ public class AttributeInfo {
         int length = inp.readInt();
 
         GenericConstant constant = pool.constants[nameIndex - 1];
+        System.out.println(((UTF8CONSTANT) constant).asString());
 
-        if (!(constant instanceof UTF8CONSTANT)) return null;
         AttributeInfo attributeInfo = switch (((UTF8CONSTANT) constant).asString()) {
             case "ConstantValue": yield new ConstantAttribute(nameIndex, length, inp);
             case "Code": yield new CodeAttribute(pool, nameIndex, length, inp);
@@ -79,10 +80,16 @@ public class AttributeInfo {
         return attributeInfo;
     }
 
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        outputStream.writeShort(nameIndex);
+        outputStream.writeInt(length);
+    }
+
     public static Attributes readAttributes(ConstantPool pool, int length, DataInputStream inp) throws IOException {
         AttributeInfo[] attributes = new AttributeInfo[length];
 
         for (int i = 0; i < length; i++) {
+            System.out.println("\\/ Attrib #" + (i + 1) + " of " + length);
             attributes[i] = readAttribute(pool, inp);
         }
 

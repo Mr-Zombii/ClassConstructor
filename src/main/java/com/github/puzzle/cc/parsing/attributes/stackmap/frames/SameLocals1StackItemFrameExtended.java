@@ -4,6 +4,7 @@ import com.github.puzzle.cc.parsing.attributes.stackmap.verification.Verificatio
 import com.github.puzzle.cc.util.Pair;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class SameLocals1StackItemFrameExtended implements StackMapFrame {
@@ -18,6 +19,16 @@ public class SameLocals1StackItemFrameExtended implements StackMapFrame {
 
         stack = new VerificationInfo[1];
         stack[0] = VerificationInfo.readType(inp);
+    }
+
+    @Override
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        outputStream.writeByte(type.a);
+        outputStream.writeShort(offsetDelta);
+        stack[0].writeToStream(outputStream);
+//        for (VerificationInfo info : stack) {
+//            info.writeToStream(outputStream);
+//        }
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.github.puzzle.cc.parsing.attributes.annotations.targets;
 import com.github.puzzle.cc.util.Pair;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class TypeParameterBoundTarget implements TypeTargetInfo {
@@ -15,6 +16,12 @@ public class TypeParameterBoundTarget implements TypeTargetInfo {
         this.type = type;
         typeParameterIndex = inp.readByte();
         boundIndex = inp.readByte();
+    }
+
+    @Override
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        outputStream.writeByte(typeParameterIndex);
+        outputStream.writeByte(boundIndex);
     }
 
     @Override

@@ -1,20 +1,29 @@
 package com.github.puzzle.cc.parsing.attributes;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class LocalVariableTableAttribute extends AttributeInfo {
 
-    int localVariableTypeTableLength;
     LocalVariableType[] localVariables;
 
     public LocalVariableTableAttribute(int nameIndex, int length, DataInputStream inp) throws IOException {
         super(nameIndex, length, inp);
 
-        localVariableTypeTableLength = inp.readUnsignedShort();
-        localVariables = new LocalVariableType[localVariableTypeTableLength];
-        for (int i = 0; i < localVariableTypeTableLength; i++) {
+        localVariables = new LocalVariableType[inp.readUnsignedShort()];
+        for (int i = 0; i < localVariables.length; i++) {
             localVariables[i] = new LocalVariableType(inp);
+        }
+    }
+
+    @Override
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        super.writeToStream(outputStream);
+
+        outputStream.writeShort(localVariables.length);
+        for (LocalVariableType localVariableType : localVariables) {
+            localVariableType.writeToStream(outputStream);
         }
     }
 
@@ -32,6 +41,14 @@ public class LocalVariableTableAttribute extends AttributeInfo {
             nameIndex = inp.readUnsignedShort();
             signatureIndex = inp.readUnsignedShort();
             index = inp.readUnsignedShort();
+        }
+
+        public void writeToStream(DataOutputStream outputStream) throws IOException {
+            outputStream.writeShort(startPc);
+            outputStream.writeShort(length);
+            outputStream.writeShort(nameIndex);
+            outputStream.writeShort(signatureIndex);
+            outputStream.writeShort(index);
         }
 
     }

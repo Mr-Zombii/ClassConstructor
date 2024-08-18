@@ -1,6 +1,7 @@
 package com.github.puzzle.cc.parsing.attributes;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class SourceDebugExtension extends AttributeInfo {
@@ -14,5 +15,11 @@ public class SourceDebugExtension extends AttributeInfo {
         for (int i = 0; i < length; i++) {
             debugExtension[i] = inp.readByte();
         }
+    }
+
+    @Override
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        super.writeToStream(outputStream);
+        for (byte b : debugExtension) outputStream.writeByte(b);
     }
 }

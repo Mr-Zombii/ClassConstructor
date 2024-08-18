@@ -3,9 +3,12 @@ package com.github.puzzle.cc.parsing.attributes.stackmap.frames;
 import com.github.puzzle.cc.util.Pair;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public interface StackMapFrame {
+
+    void writeToStream(DataOutputStream outputStream) throws IOException;
 
     Pair<Integer, StackMapFrameType> getType();
     static StackMapFrame readFrame(DataInputStream inp) throws IOException {
@@ -49,9 +52,11 @@ public interface StackMapFrame {
 
         public static Pair<Integer, StackMapFrameType> getType(int b) {
             for (StackMapFrameType type : StackMapFrameType.values()) {
-                if (type.isInRange((byte) b)) return new Pair<>(b, type);
+                if (type.isInRange((byte) b)) {
+                    return new Pair<>(b, type);
+                }
             }
-            return new Pair<>(0, SAME_FRAME);
+            throw new RuntimeException("Invalid Frame " + b);
         }
     }
 }

@@ -1,9 +1,12 @@
 package com.github.puzzle.cc.parsing.attributes.stackmap.verification;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public interface VerificationInfo {
+
+    void writeToStream(DataOutputStream outputStream) throws IOException;
 
     VerificationType getType();
 
@@ -27,17 +30,17 @@ public interface VerificationInfo {
         TOP_VARIABLE_INFO(0),
         INTEGER_VARIABLE_INFO(1),
         FLOAT_VARIABLE_INFO(2),
-        LONG_VARIABLE_INFO(3),
-        DOUBLE_VARIABLE_INFO(4),
+        DOUBLE_VARIABLE_INFO(3),
+        LONG_VARIABLE_INFO(4),
         NULL_VARIABLE_INFO(5),
         UNINITIALIZED_THIS_VARIABLE_INFO(6),
         OBJECT_VARIABLE_INFO(7),
         UNINITIALIZED_VARIABLE_INFO(8);
 
-        final byte infoOrdinal;
+        public final int infoOrdinal;
 
         VerificationType(int value) {
-            this.infoOrdinal = (byte) value;
+            this.infoOrdinal = value;
         }
 
         public static VerificationType getType(byte b) {

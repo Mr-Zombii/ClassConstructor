@@ -6,6 +6,7 @@ import com.github.puzzle.cc.parsing.attributes.annotations.values.TypePath;
 import com.github.puzzle.cc.util.Pair;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class TypeAnnotation {
@@ -14,7 +15,6 @@ public class TypeAnnotation {
     TypeTargetInfo info;
     TypePath targetPath;
     int typeIndex;
-    int elementValuePairsCount;
     Pair<Integer, ElementValue>[] valuePairs;
 
     public TypeAnnotation(DataInputStream inp) throws IOException {
@@ -25,10 +25,22 @@ public class TypeAnnotation {
 
         typeIndex = inp.readUnsignedShort();
 
-        elementValuePairsCount = inp.readUnsignedShort();
-        valuePairs = new Pair[elementValuePairsCount];
-        for (int i = 0; i < elementValuePairsCount; i++) {
+        valuePairs = new Pair[inp.readUnsignedShort()];
+        for (int i = 0; i < valuePairs.length; i++) {
             valuePairs[i] = new Pair<>(inp.readUnsignedShort(), new ElementValue(inp));
+        }
+    }
+
+    public void writeToStream(DataOutputStream stream) throws IOException {
+        stream.writeByte(targetType);
+        stream.writeByte(info.getType().ordinal() + 1);
+        info.writeToStream(stream);
+        targetPath.writeToStream(stream);
+        stream.writeShort(typeIndex);
+        stream.writeShort(valuePairs.length);
+        for (Pair<Integer, ElementValue> valuePair : valuePairs) {
+            stream.writeShort(valuePair.a);
+            valuePair.b.writeToStream(stream);
         }
     }
 

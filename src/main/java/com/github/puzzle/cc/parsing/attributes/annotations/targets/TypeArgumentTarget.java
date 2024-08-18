@@ -3,6 +3,7 @@ package com.github.puzzle.cc.parsing.attributes.annotations.targets;
 import com.github.puzzle.cc.util.Pair;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class TypeArgumentTarget implements TypeTargetInfo {
@@ -15,6 +16,12 @@ public class TypeArgumentTarget implements TypeTargetInfo {
         this.type = type;
         offset = inp.readUnsignedShort();
         typeArgumentIndex = inp.readByte();
+    }
+
+    @Override
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        outputStream.writeShort(offset);
+        outputStream.writeByte(typeArgumentIndex);
     }
 
     @Override

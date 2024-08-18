@@ -4,6 +4,7 @@ package com.github.puzzle.cc.parsing.attributes.module;
 import com.github.puzzle.cc.access.AccessFlag;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,17 +15,24 @@ public class ModuleExport {
 
     int exportsIndex;
     AccessFlag[] exportsFlags;
-    int exportsToCount;
     int[] exportsToIndex;
 
     public ModuleExport(DataInputStream inp) throws IOException {
         exportsIndex = inp.readUnsignedShort();
         exportsFlags = ModuleExportAccessFlags.getFromFlags(inp.readUnsignedShort());
-        exportsToCount = inp.readUnsignedShort();
-        exportsToIndex = new int[exportsToCount];
-        for (int i = 0; i < exportsToCount; i++) {
+        exportsToIndex = new int[inp.readUnsignedShort()];
+        for (int i = 0; i < exportsToIndex.length; i++) {
             exportsToIndex[i] = inp.readUnsignedShort();
         }
+    }
+
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        outputStream.writeShort(exportsIndex);
+        int accFlags = 0;
+        for (AccessFlag flag : exportsFlags) accFlags |= flag.getMask();
+        outputStream.writeShort(accFlags);
+        outputStream.writeShort(exportsToIndex.length);
+        for (int i : exportsToIndex) outputStream.writeShort(i);
     }
 
     public enum ModuleExportAccessFlags implements AccessFlag {

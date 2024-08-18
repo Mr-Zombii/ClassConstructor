@@ -1,6 +1,7 @@
 package com.github.puzzle.cc.parsing.attributes.stackmap.verification;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class FloatVariableInfo implements VerificationInfo {
@@ -9,6 +10,11 @@ public class FloatVariableInfo implements VerificationInfo {
 
     public FloatVariableInfo(VerificationType type, DataInputStream inp) throws IOException {
         this.type = type;
+    }
+
+    @Override
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        outputStream.writeByte(type.infoOrdinal);
     }
 
     @Override

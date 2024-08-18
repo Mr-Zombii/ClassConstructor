@@ -1,6 +1,7 @@
 package com.github.puzzle.cc.parsing.attributes;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class NestHostAttribute extends AttributeInfo {
@@ -11,5 +12,12 @@ public class NestHostAttribute extends AttributeInfo {
         super(nameIndex, length, inp);
 
         hostClassIndex = inp.readUnsignedShort();
+    }
+
+    @Override
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        super.writeToStream(outputStream);
+
+        outputStream.writeShort(hostClassIndex);
     }
 }

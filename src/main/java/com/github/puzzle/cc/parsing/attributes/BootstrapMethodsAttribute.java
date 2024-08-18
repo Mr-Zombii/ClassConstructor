@@ -1,6 +1,7 @@
 package com.github.puzzle.cc.parsing.attributes;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class BootstrapMethodsAttribute extends AttributeInfo {
@@ -20,19 +21,34 @@ public class BootstrapMethodsAttribute extends AttributeInfo {
     public static class BootstrapMethod {
 
         int bootstrapMethodRef;
-        int bootstrapArgumentsCount;
         int[] bootstrapArguments;
 
         public BootstrapMethod(DataInputStream inp) throws IOException {
             bootstrapMethodRef = inp.readUnsignedShort();
 
-            bootstrapArgumentsCount = inp.readUnsignedShort();
-            bootstrapArguments = new int[bootstrapArgumentsCount];
-            for (int i = 0; i < bootstrapArgumentsCount; i++) {
+            bootstrapArguments = new int[inp.readUnsignedShort()];
+            for (int i = 0; i < bootstrapArguments.length; i++) {
                 bootstrapArguments[i] = inp.readUnsignedShort();
+            }
+        }
+
+        public void writeToStream(DataOutputStream outputStream) throws IOException {
+            outputStream.writeShort(bootstrapMethodRef);
+            outputStream.writeShort(bootstrapArguments.length);
+            for (int i : bootstrapArguments) {
+                outputStream.writeShort(i);
             }
         }
 
     }
 
+    @Override
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        super.writeToStream(outputStream);
+
+        outputStream.writeShort(bootstrapMethods.length);
+        for (BootstrapMethod m : bootstrapMethods) {
+            m.writeToStream(outputStream);
+        }
+    }
 }

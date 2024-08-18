@@ -3,21 +3,43 @@ package com.github.puzzle.cc.parsing.containers;
 import com.github.puzzle.cc.parsing.constants.*;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ConstantPool {
 
-    public final int size;
     public GenericConstant[] constants;
 
-    public ConstantPool(DataInputStream inp) throws IOException {
-        size = inp.readUnsignedShort() - 1;
+    public ConstantPool() {
+        constants = new GenericConstant[0];
+    }
 
-        constants = new GenericConstant[size];
-        System.out.println(size);
-        for (int i = 0; i < size; i++) {
+    public ConstantPool(ConstantPool old) {
+        constants = Arrays.copyOf(old.constants, old.constants.length);
+    }
+
+    public int push(GenericConstant constant) {
+        int oldLength = constants.length;
+        if (constants.length < constants.length + 1) {
+            constants = Arrays.copyOf(constants, constants.length + 1);
+            constants[oldLength] = constant;
+        }
+        return oldLength + 1;
+    }
+
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        outputStream.writeShort(constants.length + 1);
+        for (GenericConstant constant : constants) {
+            constant.writeToStream(outputStream);
+        }
+    }
+
+    public ConstantPool(DataInputStream inp) throws IOException {
+        constants = new GenericConstant[inp.readUnsignedShort() - 1];
+        for (int i = 0; i < constants.length; i++) {
             GenericConstant constant = ConstantPool.readConstant(inp);
             System.out.println("CL " + (i + 1) + " " + constant.getTag().name());
             constants[i] = constant;
@@ -70,7 +92,7 @@ public class ConstantPool {
         CONSTANT_MODULE(19),
         CONSTANT_PACKAGE(20);
 
-        final byte tag;
+        public final byte tag;
 
         TagType(int num) {
             this.tag = (byte) num;

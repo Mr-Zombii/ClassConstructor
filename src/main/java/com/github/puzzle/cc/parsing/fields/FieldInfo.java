@@ -7,6 +7,7 @@ import com.github.puzzle.cc.parsing.containers.Attributes;
 import com.github.puzzle.cc.parsing.containers.ConstantPool;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class FieldInfo {
@@ -14,7 +15,6 @@ public class FieldInfo {
     AccessFlag[] accessFlags;
     int nameIndex;
     int descriptorIndex;
-    int attributesCount;
     Attributes attributes;
 
     public FieldInfo(ConstantPool pool, DataInputStream inp) throws IOException {
@@ -22,8 +22,16 @@ public class FieldInfo {
         nameIndex = inp.readUnsignedShort();
         descriptorIndex = inp.readUnsignedShort();
 
-        attributesCount = inp.readUnsignedShort();
-        attributes = AttributeInfo.readAttributes(pool, attributesCount, inp);
+        attributes = AttributeInfo.readAttributes(pool, inp.readUnsignedShort(), inp);
+    }
+
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        int accFlags = 0;
+        for (AccessFlag flag : accessFlags) accFlags |= flag.getMask();
+        outputStream.writeShort(accFlags);
+        outputStream.writeShort(nameIndex);
+        outputStream.writeShort(descriptorIndex);
+        attributes.writeToStream(outputStream);
     }
 
 }

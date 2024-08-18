@@ -4,6 +4,7 @@ import com.github.puzzle.cc.parsing.attributes.stackmap.verification.Verificatio
 import com.github.puzzle.cc.util.Pair;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class AppendFrame implements StackMapFrame {
@@ -18,6 +19,15 @@ public class AppendFrame implements StackMapFrame {
         locals = new VerificationInfo[type.a - 251];
         for (int i = 0; i < locals.length; i++) {
             locals[i] = VerificationInfo.readType(inp);
+        }
+    }
+
+    @Override
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        outputStream.writeByte(type.a);
+        outputStream.writeShort(offsetDelta);
+        for (VerificationInfo info : locals) {
+            info.writeToStream(outputStream);
         }
     }
 

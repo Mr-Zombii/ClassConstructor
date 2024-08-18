@@ -3,9 +3,12 @@ package com.github.puzzle.cc.parsing.attributes.annotations.targets;
 import com.github.puzzle.cc.util.Pair;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public interface TypeTargetInfo {
+
+    void writeToStream(DataOutputStream outputStream) throws IOException;
 
     TypeTargetInfoType getType();
 

@@ -1,6 +1,7 @@
 package com.github.puzzle.cc.parsing.attributes;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class DeprecatedAttribute extends AttributeInfo {
@@ -9,4 +10,8 @@ public class DeprecatedAttribute extends AttributeInfo {
         super(nameIndex, length, inp);
     }
 
+    @Override
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        super.writeToStream(outputStream);
+    }
 }

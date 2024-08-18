@@ -3,6 +3,7 @@ package com.github.puzzle.cc.parsing.attributes;
 import com.github.puzzle.cc.access.AccessFlag;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,16 +12,24 @@ import java.util.Map;
 
 public class MethodParametersAttribute extends AttributeInfo {
 
-    int parametersCount;
     MethodParameter[] parameters;
 
     public MethodParametersAttribute(int nameIndex, int length, DataInputStream inp) throws IOException {
         super(nameIndex, length, inp);
 
-        parametersCount = inp.readUnsignedShort();
-        parameters = new MethodParameter[parametersCount];
-        for (int i = 0; i < parametersCount; i++) {
+        parameters = new MethodParameter[inp.readUnsignedShort()];
+        for (int i = 0; i < parameters.length; i++) {
             parameters[i] = new MethodParameter(inp);
+        }
+    }
+
+    @Override
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        super.writeToStream(outputStream);
+
+        outputStream.writeShort(parameters.length);
+        for (MethodParameter parameter : parameters) {
+            parameter.writeToStream(outputStream);
         }
     }
 
@@ -32,6 +41,13 @@ public class MethodParametersAttribute extends AttributeInfo {
         public MethodParameter(DataInputStream inp) throws IOException {
             nameIndex = inp.readUnsignedShort();
             accessFlags = MethodParameterAccessFlag.getFromFlags(inp.readUnsignedShort());
+        }
+
+        public void writeToStream(DataOutputStream outputStream) throws IOException {
+            outputStream.writeShort(nameIndex);
+            int accFlags = 0;
+            for (AccessFlag flag : accessFlags) accFlags |= flag.getMask();
+            outputStream.writeShort(accFlags);
         }
 
     }

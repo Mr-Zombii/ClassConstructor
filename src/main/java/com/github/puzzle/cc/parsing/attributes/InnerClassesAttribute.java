@@ -4,6 +4,7 @@ import com.github.puzzle.cc.access.AccessFlag;
 import com.github.puzzle.cc.access.ClassAccessFlag;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class InnerClassesAttribute extends AttributeInfo {
@@ -21,6 +22,14 @@ public class InnerClassesAttribute extends AttributeInfo {
         }
     }
 
+    @Override
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        super.writeToStream(outputStream);
+
+        outputStream.writeShort(classes.length);
+        for (InnerClass i : classes) i.writeToStream(outputStream);
+    }
+
     public static class InnerClass {
 
         int innerClassInfoIndex;
@@ -33,6 +42,16 @@ public class InnerClassesAttribute extends AttributeInfo {
             outerClassInfoIndex = inp.readUnsignedShort();
             innerNameIndex = inp.readUnsignedShort();
             accessFlags = ClassAccessFlag.getFromFlags(inp.readUnsignedShort());
+        }
+
+        public void writeToStream(DataOutputStream outputStream) throws IOException {
+            outputStream.writeShort(innerClassInfoIndex);
+            outputStream.writeShort(outerClassInfoIndex);
+            outputStream.writeShort(innerNameIndex);
+
+            int accFlags = 0;
+            for (AccessFlag flag : accessFlags) accFlags |= flag.getMask();
+            outputStream.writeShort(accFlags);
         }
 
     }

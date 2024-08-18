@@ -5,6 +5,7 @@ import com.github.puzzle.cc.parsing.attributes.module.ModuleOpen;
 import com.github.puzzle.cc.parsing.attributes.module.ModuleRequire;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class ModuleAttribute extends AttributeInfo {
@@ -13,16 +14,10 @@ public class ModuleAttribute extends AttributeInfo {
     int moduleFlags;
     int moduleVersionIndex;
 
-    int requiresCount;
     ModuleRequire[] requires;
-
-    int exportsCount;
     ModuleExport[] exports;
-
-    int opensCount;
     ModuleOpen[] opens;
 
-    int usesCount;
     int[] usesIndexes;
 
     public ModuleAttribute(int nameIndex, int length, DataInputStream inp) throws IOException {
@@ -32,28 +27,43 @@ public class ModuleAttribute extends AttributeInfo {
         moduleFlags = inp.readUnsignedShort();
         moduleVersionIndex = inp.readUnsignedShort();
 
-        requiresCount = inp.readUnsignedShort();
-        requires = new ModuleRequire[requiresCount];
-        for (int i = 0; i < requiresCount; i++) {
+        requires = new ModuleRequire[inp.readUnsignedShort()];
+        for (int i = 0; i < requires.length; i++) {
             requires[i] = new ModuleRequire(inp);
         }
 
-        exportsCount = inp.readUnsignedShort();
-        exports = new ModuleExport[exportsCount];
-        for (int i = 0; i < exportsCount; i++) {
+        exports = new ModuleExport[inp.readUnsignedShort()];
+        for (int i = 0; i < exports.length; i++) {
             exports[i] = new ModuleExport(inp);
         }
 
-        opensCount = inp.readUnsignedShort();
-        opens = new ModuleOpen[opensCount];
-        for (int i = 0; i < opensCount; i++) {
+        opens = new ModuleOpen[inp.readUnsignedShort()];
+        for (int i = 0; i < opens.length; i++) {
             opens[i] = new ModuleOpen(inp);
         }
 
-        usesCount = inp.readUnsignedShort();
-        usesIndexes = new int[usesCount];
-        for (int i = 0; i < usesCount; i++) {
+        usesIndexes = new int[inp.readUnsignedShort()];
+        for (int i = 0; i < usesIndexes.length; i++) {
             usesIndexes[i] = inp.readUnsignedShort();
         }
+    }
+
+    @Override
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        super.writeToStream(outputStream);
+
+        outputStream.writeShort(moduleNameIndex);
+        outputStream.writeShort(moduleFlags);
+        outputStream.writeShort(moduleVersionIndex);
+
+        outputStream.writeShort(requires.length);
+        for (ModuleRequire require : requires) require.writeToStream(outputStream);
+        outputStream.writeShort(exports.length);
+        for (ModuleExport export : exports) export.writeToStream(outputStream);
+        outputStream.writeShort(opens.length);
+        for (ModuleOpen open : opens) open.writeToStream(outputStream);
+
+        outputStream.writeShort(usesIndexes.length);
+        for (int index : usesIndexes) outputStream.writeShort(index);
     }
 }

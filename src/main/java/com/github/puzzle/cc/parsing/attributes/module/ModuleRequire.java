@@ -3,6 +3,7 @@ package com.github.puzzle.cc.parsing.attributes.module;
 import com.github.puzzle.cc.access.AccessFlag;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,14 @@ public class ModuleRequire {
         requiresIndex = inp.readUnsignedShort();
         requiresFlags = ModuleRequireAccessFlags.getFromFlags(inp.readUnsignedShort());
         requiresVersionIndex = inp.readUnsignedShort();
+    }
+
+    public void writeToStream(DataOutputStream outputStream) throws IOException {
+        outputStream.writeShort(requiresIndex);
+        int accFlags = 0;
+        for (AccessFlag flag : requiresFlags) accFlags |= flag.getMask();
+        outputStream.writeShort(accFlags);
+        outputStream.writeShort(requiresVersionIndex);
     }
 
     public enum ModuleRequireAccessFlags implements AccessFlag {
