@@ -26,7 +26,7 @@ public class MethodHandleConstant extends GenericConstant {
     @Override
     public void writeToStream(DataOutputStream stream) throws IOException {
         super.writeToStream(stream);
-        stream.writeShort(referenceKind);
+        stream.writeByte(referenceKind);
         stream.writeShort(referenceIndex);
     }
 
