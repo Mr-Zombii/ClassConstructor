@@ -45,4 +45,9 @@ public class Attributes {
         return null;
     }
 
+    public int size() {
+        int size = 4 * attributes.length;
+        for (AttributeInfo info : attributes) size += info.getLength();
+        return size;
+    }
 }

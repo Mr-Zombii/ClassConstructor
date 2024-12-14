@@ -63,8 +63,8 @@ public class ClassReader {
             this_class_index = inp.readUnsignedShort();
             super_class_index = inp.readUnsignedShort();
 
-            this_class = (ClassConstant) constantPool.constants[this_class_index - 1];
-            super_class = (ClassConstant) constantPool.constants[super_class_index - 1];
+            this_class = (ClassConstant) constantPool.get(this_class_index);
+            super_class = (ClassConstant) constantPool.get(super_class_index);
         } catch (Exception e) {
             throw new RuntimeException("Constant Pool Is Broken, ", e);
         }
@@ -73,7 +73,7 @@ public class ClassReader {
         interfaces_indexes = new int[interfaces.length];
         for (int i = 0; i < interfaces.length; i++) {
             interfaces_indexes[i] = inp.readUnsignedShort();
-            interfaces[i] = (ClassConstant) constantPool.constants[interfaces_indexes[i] - 1];
+            interfaces[i] = (ClassConstant) constantPool.get(interfaces_indexes[i]);
         }
 
         int field_count = inp.readUnsignedShort();
@@ -90,6 +90,10 @@ public class ClassReader {
 
         int attributes_count = inp.readUnsignedShort();
         attributes = AttributeInfo.readAttributes(constantPool, attributes_count, inp);
+
+        for (FieldInfo info : fields) {
+            System.out.println(info.getName(constantPool));
+        }
     }
 
     public byte[] toBytes() throws IOException {

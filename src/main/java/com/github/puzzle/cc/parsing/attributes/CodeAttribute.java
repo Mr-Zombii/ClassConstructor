@@ -6,6 +6,7 @@ import com.github.puzzle.cc.parsing.containers.ConstantPool;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.function.Supplier;
 
 public class CodeAttribute extends AttributeInfo {
 
@@ -17,6 +18,23 @@ public class CodeAttribute extends AttributeInfo {
     ExceptionValue[] exceptionTable;
 
     Attributes attributes;
+
+    public CodeAttribute(int nameIndex, int maxStack, int maxLocals, byte[] code, ExceptionValue[] exceptionTable, Attributes attributes) {
+        super(nameIndex, ((Supplier<Integer>)() -> {
+            int size = 0;
+            size += 12;
+            size += code.length;
+            size += (8 * exceptionTable.length);
+            size += attributes.size();
+            return size;
+        }).get(), null);
+        this.nameIndex = nameIndex;
+        this.maxStack = maxStack;
+        this.maxLocals = maxLocals;
+        this.code = code;
+        this.exceptionTable = exceptionTable;
+        this.attributes = attributes;
+    }
 
     public CodeAttribute(ConstantPool pool, int nameIndex, int length, DataInputStream inp) throws IOException {
         super(nameIndex, length, inp);
@@ -57,6 +75,24 @@ public class CodeAttribute extends AttributeInfo {
         int endPc;
         int handlerPc;
         int catchType;
+
+        public ExceptionValue() {}
+
+        public void setStartPc(int startPc) {
+            this.startPc = startPc;
+        }
+
+        public void setEndPc(int endPc) {
+            this.endPc = endPc;
+        }
+
+        public void setCatchType(int catchType) {
+            this.catchType = catchType;
+        }
+
+        public void setHandlerPc(int handlerPc) {
+            this.handlerPc = handlerPc;
+        }
 
         public ExceptionValue(DataInputStream inp) throws IOException {
             startPc = inp.readUnsignedShort();

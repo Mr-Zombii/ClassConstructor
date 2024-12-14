@@ -21,7 +21,7 @@ public class AttributeInfo {
     }
 
     public String getName(ConstantPool pool) {
-        return ((UTF8CONSTANT)pool.constants[nameIndex]).asString();
+        return ((UTF8CONSTANT)pool.get(nameIndex)).asString();
     }
 
     String type;
@@ -38,11 +38,11 @@ public class AttributeInfo {
         int nameIndex = inp.readUnsignedShort();
         int length = inp.readInt();
 
-        GenericConstant constant = pool.constants[nameIndex - 1];
+        GenericConstant constant = pool.get(nameIndex);
         System.out.println(((UTF8CONSTANT) constant).asString());
 
         AttributeInfo attributeInfo = switch (((UTF8CONSTANT) constant).asString()) {
-            case "ConstantValue": yield new ConstantAttribute(nameIndex, length, inp);
+            case "ConstantValue": yield new ConstantValueAttribute(nameIndex, length, inp);
             case "Code": yield new CodeAttribute(pool, nameIndex, length, inp);
             case "StackMapTable": yield new StackMapAttribute(nameIndex, length, inp);
             case "Exceptions": yield new ExceptionsAttribute(nameIndex, length, inp);
@@ -96,4 +96,7 @@ public class AttributeInfo {
         return new Attributes(attributes);
     }
 
+    public int getLength() {
+        return length;
+    }
 }

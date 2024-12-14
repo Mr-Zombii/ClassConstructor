@@ -31,11 +31,11 @@ public class NameAndTypeConstant extends GenericConstant {
     }
 
     public String getName(ConstantPool pool) {
-        return ((UTF8CONSTANT) pool.constants[nameIndex]).asString();
+        return ((UTF8CONSTANT) pool.get(nameIndex)).asString();
     }
 
     public String getDescriptor(ConstantPool pool) {
-        return ((UTF8CONSTANT) pool.constants[descriptorIndex]).asString();
+        return ((UTF8CONSTANT) pool.get(descriptorIndex)).asString();
     }
 
 }

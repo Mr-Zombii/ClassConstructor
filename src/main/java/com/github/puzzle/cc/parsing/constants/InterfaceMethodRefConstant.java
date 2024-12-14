@@ -31,11 +31,11 @@ public class InterfaceMethodRefConstant extends GenericConstant {
     }
 
     public ClassConstant getClass(ConstantPool pool) {
-        return (ClassConstant) pool.constants[classIndex];
+        return ((ClassConstant) pool.get(classIndex));
     }
 
     public NameAndTypeConstant getNameAndType(ConstantPool pool) {
-        return (NameAndTypeConstant) pool.constants[nameAndTypeIndex];
+        return ((NameAndTypeConstant) pool.get(nameAndTypeIndex));
     }
 
 }

@@ -13,10 +13,10 @@ import java.io.IOException;
 
 public class MethodInfo {
 
-    AccessFlag[] accessFlags;
-    int nameIndex;
-    int descriptorIndex;
-    Attributes attributes;
+    public AccessFlag[] accessFlags;
+    public int nameIndex;
+    public int descriptorIndex;
+    public Attributes attributes;
 
     public MethodInfo(ConstantPool pool, DataInputStream inp) throws IOException {
         accessFlags = MethodAccessFlags.getFromFlags(inp.readUnsignedShort());

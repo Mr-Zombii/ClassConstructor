@@ -35,6 +35,6 @@ public class DynamicConstant extends GenericConstant {
     }
 
     public NameAndTypeConstant getNameAndType(ConstantPool pool) {
-        return (NameAndTypeConstant) pool.constants[nameAndTypeIndex];
+        return (NameAndTypeConstant) pool.get(nameAndTypeIndex);
     }
 }

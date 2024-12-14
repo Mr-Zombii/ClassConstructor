@@ -1,22 +1,28 @@
 package com.github.puzzle.cc.writer;
 
-import com.github.puzzle.cc.access.AccessFlag;
 import com.github.puzzle.cc.access.ClassAccessFlag;
+import com.github.puzzle.cc.access.FieldAccessFlag;
+import com.github.puzzle.cc.access.MethodAccessFlags;
 import com.github.puzzle.cc.parsing.ClassReader;
 import com.github.puzzle.cc.parsing.attributes.AttributeInfo;
+import com.github.puzzle.cc.parsing.attributes.ConstantValueAttribute;
 import com.github.puzzle.cc.parsing.attributes.SourceFileAttribute;
 import com.github.puzzle.cc.parsing.constants.ClassConstant;
 import com.github.puzzle.cc.parsing.constants.GenericConstant;
+import com.github.puzzle.cc.parsing.constants.StringConstant;
 import com.github.puzzle.cc.parsing.constants.UTF8CONSTANT;
 import com.github.puzzle.cc.parsing.containers.Attributes;
 import com.github.puzzle.cc.parsing.containers.ConstantPool;
 import com.github.puzzle.cc.parsing.fields.FieldInfo;
 import com.github.puzzle.cc.parsing.methods.MethodInfo;
 import com.github.puzzle.cc.util.Pair;
+import com.github.puzzle.cc.writer.attribute.CodeAttributeBuilder;
+import com.github.puzzle.cc.writer.field.FieldWriter;
+import com.github.puzzle.cc.writer.method.MethodWriter;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.BiConsumer;
 
 public class ClassWriter {
 
@@ -31,9 +37,10 @@ public class ClassWriter {
 
     int accessFlags;
 
-    List<Integer> interfaces = new ArrayList<>();
-    List<MethodInfo> methodInfos = new ArrayList<>();
-    List<FieldInfo> fieldInfos = new ArrayList<>();
+    private List<Integer> interfaces = new ArrayList<>();
+
+    List<FieldWriter> fields = new ArrayList<>();
+    List<MethodWriter> methods = new ArrayList<>();
 
     public ClassWriter(ClassReader reader) {
         classVersion = new Pair<>(reader.classVersion.a, reader.classVersion.b);
@@ -50,9 +57,8 @@ public class ClassWriter {
         superClassIndex = reader.super_class_index;
         thisClassIndex = reader.this_class_index;
 
-        fieldInfos.addAll(Arrays.asList(Arrays.copyOf(reader.fields, reader.fields.length)));
-
-        methodInfos.addAll(Arrays.asList(Arrays.copyOf(reader.methods, reader.methods.length)));
+        for (FieldInfo f : reader.fields) fields.add(new FieldWriter(this, f));
+        for (MethodInfo m : reader.methods) methods.add(new MethodWriter(this, m));
     }
 
     public ClassWriter(
@@ -102,10 +108,33 @@ public class ClassWriter {
         return attributes.push(attributeInfo);
     }
 
+    public void addInterface(Class<?> className) {
+        if (!className.isInterface()) throw new RuntimeException("Class must be an interface");
+        addInterface(className.getName());
+    }
+
     public void addInterface(String className) {
         int interfaceUTF8Index = constantPool.push(new UTF8CONSTANT(className));
         int interfaceClassIndex = constantPool.push(new ClassConstant(interfaceUTF8Index));
         interfaces.add(interfaceClassIndex);
+    }
+
+    public FieldWriter addField(String name, Class<?> type) {
+        FieldWriter fieldWriter = new FieldWriter(name, type);
+        fields.add(fieldWriter);
+        return fieldWriter;
+    }
+
+    public FieldWriter addField(String name, String descriptor) {
+        FieldWriter fieldWriter = new FieldWriter(name, descriptor);
+        fields.add(fieldWriter);
+        return fieldWriter;
+    }
+
+    public MethodWriter addMethod(String name, Class<?> returnType, Class<?>... argTypes) {
+        MethodWriter methodWriter = new MethodWriter(name, returnType, argTypes);
+        methods.add(methodWriter);
+        return methodWriter;
     }
 
     public byte[] toBytes() throws IOException {
@@ -118,6 +147,9 @@ public class ClassWriter {
         // Write Version minor, major
         stream.writeShort(classVersion.b);
         stream.writeShort(classVersion.a);
+
+        for (FieldWriter writer : fields) writer.setup(this);
+        for (MethodWriter writer : methods) writer.setup(this);
 
         // Write ConstantPool
         constantPool.writeToStream(stream);
@@ -134,12 +166,12 @@ public class ClassWriter {
         for (int interfce : interfaces)
             stream.writeShort(interfce);
 
-        stream.writeShort(fieldInfos.size());
-        for (FieldInfo f : fieldInfos)
-            f.writeToStream(stream);
+        stream.writeShort(fields.size());
+        for (FieldWriter fieldWriter : fields)
+            fieldWriter.writeToStream(stream);
 
-        stream.writeShort(methodInfos.size());
-        for (MethodInfo f : methodInfos)
+        stream.writeShort(methods.size());
+        for (MethodWriter f : methods)
             f.writeToStream(stream);
 
         // write attributes
@@ -149,37 +181,51 @@ public class ClassWriter {
     }
 
     public static void main(String[] args) {
-//        ClassWriter writer = new ClassWriter(
-//                new Pair<>(6, 9),
-//                ClassAccessFlag.ACC_PUBLIC.getMask(),
-//                Object.class,
-//                "com/github/puzzle/cc/Test"
-//        );
-//
-//        try {
-//            File f = new File("Test.class");
-//            FileOutputStream outputStream = new FileOutputStream(f);
-//            outputStream.write(writer.toBytes());
-//
-//            ClassReader reader = new ClassReader(writer.toBytes());
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        ClassWriter writer = new ClassWriter(
+                new Pair<>(6, 9),
+                ClassAccessFlag.ACC_PUBLIC.getMask(),
+                Object.class,
+                "com/github/puzzle/cc/Test"
+        );
 
-        File file = new File("./tests/WatParser.class");
+        writer.addInterface(BiConsumer.class);
+
+        MethodWriter methodWriter = writer.addMethod("main", void.class, String[].class);
+        methodWriter.addAccessFlag(MethodAccessFlags.ACC_PUBLIC, MethodAccessFlags.ACC_STATIC);
+        CodeAttributeBuilder builder = new CodeAttributeBuilder(writer.constantPool, 10, 10);
+        methodWriter.addAttribute(builder.end());
+
+        FieldWriter fieldWriter = writer.addField("text", String.class);
+        int valueNameIndex = writer.pushConstant(new UTF8CONSTANT("ConstantValue"));
+        int value = writer.pushConstant(new StringConstant(writer.pushConstant(new UTF8CONSTANT("Hola"))));
+
+        fieldWriter.getAttributes().push(new ConstantValueAttribute(valueNameIndex, value));
+        fieldWriter.addAccessFlag(FieldAccessFlag.ACC_PUBLIC, FieldAccessFlag.ACC_FINAL, FieldAccessFlag.ACC_STATIC);
+
         try {
-            FileInputStream stream = new FileInputStream(file);
-            ClassReader reader = new ClassReader(stream.readAllBytes());
-//            ClassWriter writer = new ClassWriter(reader);
-
-            File f = new File("Test2.class");
+            File f = new File("Test.class");
             FileOutputStream outputStream = new FileOutputStream(f);
-            outputStream.write(reader.toBytes());
+            outputStream.write(writer.toBytes());
 
-            ClassReader reader2 = new ClassReader(reader.toBytes());
+            ClassReader reader = new ClassReader(writer.toBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+//        File file = new File("./tests/WatParser.class");
+//        try {
+//            FileInputStream stream = new FileInputStream(file);
+//            ClassReader reader = new ClassReader(stream.readAllBytes());
+//            ClassWriter writer = new ClassWriter(reader);
+
+//            File f = new File("Test2.class");
+//            FileOutputStream outputStream = new FileOutputStream(f);
+//            outputStream.write(reader.toBytes());
+
+//            ClassReader reader2 = new ClassReader(reader.toBytes());
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
 
 
 

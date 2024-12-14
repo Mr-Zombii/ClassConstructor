@@ -30,11 +30,11 @@ public class MethodRefConstant extends GenericConstant {
         stream.writeShort(nameAndTypeIndex);
     }
 
-    public String getClass(ConstantPool pool) {
-        return ((UTF8CONSTANT) pool.constants[classIndex]).asString();
+    public ClassConstant getClass(ConstantPool pool) {
+        return ((ClassConstant) pool.get(classIndex));
     }
 
     public NameAndTypeConstant getNameAndType(ConstantPool pool) {
-        return (NameAndTypeConstant) pool.constants[nameAndTypeIndex];
+        return ((NameAndTypeConstant) pool.get(classIndex));
     }
 }

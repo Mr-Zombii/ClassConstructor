@@ -22,12 +22,16 @@ public class ConstantPool {
     }
 
     public int push(GenericConstant constant) {
-        int oldLength = constants.length;
-        if (constants.length < constants.length + 1) {
-            constants = Arrays.copyOf(constants, constants.length + 1);
-            constants[oldLength] = constant;
+        if (constant instanceof UTF8CONSTANT) {
+            int index = findUTF8((UTF8CONSTANT) constant);
+            if (index != -1) return index;
         }
-        return oldLength + 1;
+        int index = constants.length + 1;
+        if (constants.length < constants.length + 1) {
+            constants = Arrays.copyOf(constants, index);
+            constants[index - 1] = constant;
+        }
+        return index;
     }
 
     public void writeToStream(DataOutputStream outputStream) throws IOException {
@@ -68,6 +72,23 @@ public class ConstantPool {
             case CONSTANT_MODULE -> new ModuleConstant(type, inp);
             case CONSTANT_PACKAGE -> new PackageConstant(type, inp);
         };
+    }
+
+    public GenericConstant get(int i) {
+        return constants[i - 1];
+    }
+
+    public int findUTF8(UTF8CONSTANT constant) {
+        return findUTF8(constant.asString());
+    }
+
+    public int findUTF8(String contents) {
+        for (int i = 0; i < constants.length; i++) {
+            GenericConstant constant = constants[i];
+            if (constant instanceof UTF8CONSTANT && ((UTF8CONSTANT) constant).asString().equals(contents))
+                return i + 1;
+        }
+        return -1;
     }
 
     public enum TagType {

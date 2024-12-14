@@ -27,7 +27,7 @@ public class ClassConstant extends GenericConstant {
     }
 
     public String getName(ConstantPool pool) {
-        return ((UTF8CONSTANT)pool.constants[nameIndex]).asString();
+        return ((UTF8CONSTANT)pool.get(nameIndex)).asString();
     }
 
 }

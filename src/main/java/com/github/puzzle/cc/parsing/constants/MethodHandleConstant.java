@@ -35,7 +35,7 @@ public class MethodHandleConstant extends GenericConstant {
     }
 
     public GenericConstant getReference(ConstantPool pool) {
-        return pool.constants[referenceIndex];
+        return pool.get(referenceIndex);
     }
 
     public enum ReferenceKind {
