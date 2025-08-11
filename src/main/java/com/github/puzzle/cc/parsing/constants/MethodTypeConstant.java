@@ -30,4 +30,7 @@ public class MethodTypeConstant extends GenericConstant {
         return ((UTF8CONSTANT) pool.get(descriptorIndex)).asString();
     }
 
+    public int getDescriptorIndex() {
+        return descriptorIndex;
+    }
 }

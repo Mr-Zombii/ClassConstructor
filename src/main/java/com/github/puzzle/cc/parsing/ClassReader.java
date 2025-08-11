@@ -4,7 +4,6 @@ import com.github.puzzle.cc.access.AccessFlag;
 import com.github.puzzle.cc.access.ClassAccessFlag;
 import com.github.puzzle.cc.parsing.attributes.AttributeInfo;
 import com.github.puzzle.cc.parsing.constants.ClassConstant;
-import com.github.puzzle.cc.parsing.constants.GenericConstant;
 import com.github.puzzle.cc.parsing.containers.Attributes;
 import com.github.puzzle.cc.parsing.containers.ConstantPool;
 import com.github.puzzle.cc.parsing.fields.FieldInfo;
@@ -49,13 +48,14 @@ public class ClassReader {
 
         int minor_ver = inp.readUnsignedShort();
         int major_ver = inp.readUnsignedShort();
-        classVersion = new Pair<>(major_ver, minor_ver) {
+        classVersion = new Pair(major_ver, minor_ver) {
             @Override
             public String toString() {
                 return a + "." + b;
             }
         };
         constantPool = new ConstantPool(inp);
+        System.out.println(constantPool);
 
         rawAccessFlags = inp.readUnsignedShort();
         accessFlags = ClassAccessFlag.getFromFlags(rawAccessFlags);
@@ -90,10 +90,6 @@ public class ClassReader {
 
         int attributes_count = inp.readUnsignedShort();
         attributes = AttributeInfo.readAttributes(constantPool, attributes_count, inp);
-
-        for (FieldInfo info : fields) {
-            System.out.println(info.getName(constantPool));
-        }
     }
 
     public byte[] toBytes() throws IOException {

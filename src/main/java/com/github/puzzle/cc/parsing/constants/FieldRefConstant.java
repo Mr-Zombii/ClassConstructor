@@ -38,4 +38,11 @@ public class FieldRefConstant extends GenericConstant {
         return ((NameAndTypeConstant) pool.get(nameAndTypeIndex));
     }
 
+    public int getClassIndex() {
+        return classIndex;
+    }
+
+    public int getNameAndTypeIndex() {
+        return nameAndTypeIndex;
+    }
 }

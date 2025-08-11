@@ -34,7 +34,16 @@ public class ElementValue {
 
         public Value(char tag, DataInputStream inp) throws IOException {
             switch (tag) {
-                case 'B', 'C', 'D', 'F', 'I', 'J', 'K', 'S', 'Z', 's':
+                case 'B':
+                case 'C':
+                case 'D':
+                case 'F':
+                case 'I':
+                case 'J':
+                case 'K':
+                case 'S':
+                case 'Z':
+                case 's':
                     classInfoIndex = -1999999999;
                     valueIndex = inp.readUnsignedShort();
                     break;

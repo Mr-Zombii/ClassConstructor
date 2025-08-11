@@ -1,6 +1,4 @@
-package com.github.puzzle.cc.parsing.opcodes;
-
-import com.github.puzzle.cc.util.ImmutablePair;
+package com.github.puzzle.cc.util;
 
 public class ClassVersions {
 
@@ -31,5 +29,6 @@ public class ClassVersions {
     public final ImmutablePair<Integer, Integer> JAVA_22 = new ImmutablePair<>(66, 0);
     public final ImmutablePair<Integer, Integer> JAVA_23 = new ImmutablePair<>(67, 0);
     public final ImmutablePair<Integer, Integer> JAVA_24 = new ImmutablePair<>(68, 0);
+    public final ImmutablePair<Integer, Integer> JAVA_25 = new ImmutablePair<>(69, 0);
 
 }

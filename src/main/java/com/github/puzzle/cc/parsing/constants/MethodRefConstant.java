@@ -35,6 +35,14 @@ public class MethodRefConstant extends GenericConstant {
     }
 
     public NameAndTypeConstant getNameAndType(ConstantPool pool) {
-        return ((NameAndTypeConstant) pool.get(classIndex));
+        return ((NameAndTypeConstant) pool.get(nameAndTypeIndex));
+    }
+
+    public int getClassIndex() {
+        return classIndex;
+    }
+
+    public int getNameAndTypeIndex() {
+        return nameAndTypeIndex;
     }
 }

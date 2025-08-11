@@ -30,4 +30,7 @@ public class ClassConstant extends GenericConstant {
         return ((UTF8CONSTANT)pool.get(nameIndex)).asString();
     }
 
+    public int getNameIdx() {
+        return nameIndex;
+    }
 }

@@ -29,4 +29,8 @@ public class ModuleConstant extends GenericConstant {
     public String getName(ConstantPool pool) {
         return ((UTF8CONSTANT) pool.get(nameIndex)).asString();
     }
+
+    public int getNameIndex() {
+        return nameIndex;
+    }
 }

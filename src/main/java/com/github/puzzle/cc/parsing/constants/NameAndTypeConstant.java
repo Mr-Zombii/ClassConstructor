@@ -38,4 +38,11 @@ public class NameAndTypeConstant extends GenericConstant {
         return ((UTF8CONSTANT) pool.get(descriptorIndex)).asString();
     }
 
+    public int getNameIndex() {
+        return nameIndex;
+    }
+
+    public int getDescriptorIndex() {
+        return descriptorIndex;
+    }
 }

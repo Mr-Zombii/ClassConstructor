@@ -13,17 +13,28 @@ public interface VerificationInfo {
     static VerificationInfo readType(DataInputStream inp) throws IOException {
         VerificationType type = VerificationType.getType(inp.readByte());
 
-        return switch (type) {
-            case TOP_VARIABLE_INFO -> new TopVariableInfo(type, inp);
-            case INTEGER_VARIABLE_INFO -> new IntegerVariableInfo(type, inp);
-            case FLOAT_VARIABLE_INFO -> new FloatVariableInfo(type, inp);
-            case LONG_VARIABLE_INFO -> new LongVariableInfo(type, inp);
-            case DOUBLE_VARIABLE_INFO -> new DoubleVariableInfo(type, inp);
-            case NULL_VARIABLE_INFO -> new NullVariableInfo(type, inp);
-            case UNINITIALIZED_THIS_VARIABLE_INFO -> new UninitializedThisVariableInfo(type, inp);
-            case OBJECT_VARIABLE_INFO -> new ObjectVariableInfo(type, inp);
-            case UNINITIALIZED_VARIABLE_INFO -> new UninitializedVariableInfo(type, inp);
-        };
+        switch (type) {
+            case TOP_VARIABLE_INFO:
+                return new TopVariableInfo(type, inp);
+            case INTEGER_VARIABLE_INFO:
+                return new IntegerVariableInfo(type, inp);
+            case FLOAT_VARIABLE_INFO:
+                return new FloatVariableInfo(type, inp);
+            case LONG_VARIABLE_INFO:
+                return new LongVariableInfo(type, inp);
+            case DOUBLE_VARIABLE_INFO:
+                return new DoubleVariableInfo(type, inp);
+            case NULL_VARIABLE_INFO:
+                return new NullVariableInfo(type, inp);
+            case UNINITIALIZED_THIS_VARIABLE_INFO:
+                return new UninitializedThisVariableInfo(type, inp);
+            case OBJECT_VARIABLE_INFO:
+                return new ObjectVariableInfo(type, inp);
+            case UNINITIALIZED_VARIABLE_INFO:
+                return new UninitializedVariableInfo(type, inp);
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     enum VerificationType {

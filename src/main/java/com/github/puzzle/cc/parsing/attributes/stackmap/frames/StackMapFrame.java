@@ -14,15 +14,24 @@ public interface StackMapFrame {
     static StackMapFrame readFrame(DataInputStream inp) throws IOException {
         Pair<Integer, StackMapFrameType> type = StackMapFrameType.getType(inp.readUnsignedByte());
 
-        return switch (type.b) {
-            case SAME_FRAME -> new SameFrame(type, inp);
-            case SAME_LOCALS_1_STACK_ITEM_FRAME -> new SameLocals1StackItemFrame(type, inp);
-            case SAME_LOCALS_1_STACK_ITEM_FRAME_EXTENDED -> new SameLocals1StackItemFrameExtended(type, inp);
-            case CHOP_FRAME -> new ChopFrame(type, inp);
-            case SAME_FRAME_EXTENDED -> new SameFrameExtended(type, inp);
-            case APPEND_FRAME -> new AppendFrame(type, inp);
-            case FULL_FRAME -> new FullFrame(type, inp);
-        };
+        switch (type.b) {
+            case SAME_FRAME:
+                return new SameFrame(type, inp);
+            case SAME_LOCALS_1_STACK_ITEM_FRAME:
+                return new SameLocals1StackItemFrame(type, inp);
+            case SAME_LOCALS_1_STACK_ITEM_FRAME_EXTENDED:
+                return new SameLocals1StackItemFrameExtended(type, inp);
+            case CHOP_FRAME:
+                return new ChopFrame(type, inp);
+            case SAME_FRAME_EXTENDED:
+                return new SameFrameExtended(type, inp);
+            case APPEND_FRAME:
+                return new AppendFrame(type, inp);
+            case FULL_FRAME:
+                return new FullFrame(type, inp);
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     enum StackMapFrameType {

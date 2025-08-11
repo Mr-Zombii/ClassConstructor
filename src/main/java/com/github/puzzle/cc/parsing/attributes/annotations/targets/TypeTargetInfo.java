@@ -15,18 +15,30 @@ public interface TypeTargetInfo {
     static TypeTargetInfo readTargetInfo(DataInputStream inp) throws IOException {
         Pair<Byte, TypeTargetInfoType> type = TypeTargetInfoType.getType(inp.readByte());
 
-        return switch (type.b) {
-            case TYPE_PARAMETER_TARGET -> new TypeParameterTarget(type, inp);
-            case SUPER_TYPE_TARGET -> new SuperTypeTarget(type, inp);
-            case TYPE_PARAMETER_BOUND_TARGET -> new TypeParameterBoundTarget(type, inp);
-            case EMPTY_TARGET -> new EmptyTarget(type, inp);
-            case FORMAL_PARAMETER_TARGET -> new FormatParameterTarget(type, inp);
-            case THROWS_TARGET -> new ThrowsTarget(type, inp);
-            case LOCAL_VAR_TARGET -> new LocalVarTarget(type, inp);
-            case CATCH_TARGET -> new CatchTarget(type, inp);
-            case OFFSET_TARGET -> new OffsetTarget(type, inp);
-            case TYPE_ARGUMENT_TARGET -> new TypeArgumentTarget(type, inp);
-        };
+        switch (type.b) {
+            case TYPE_PARAMETER_TARGET:
+                return new TypeParameterTarget(type, inp);
+            case SUPER_TYPE_TARGET:
+                return new SuperTypeTarget(type, inp);
+            case TYPE_PARAMETER_BOUND_TARGET:
+                return new TypeParameterBoundTarget(type, inp);
+            case EMPTY_TARGET:
+                return new EmptyTarget(type, inp);
+            case FORMAL_PARAMETER_TARGET:
+                return new FormatParameterTarget(type, inp);
+            case THROWS_TARGET:
+                return new ThrowsTarget(type, inp);
+            case LOCAL_VAR_TARGET:
+                return new LocalVarTarget(type, inp);
+            case CATCH_TARGET:
+                return new CatchTarget(type, inp);
+            case OFFSET_TARGET:
+                return new OffsetTarget(type, inp);
+            case TYPE_ARGUMENT_TARGET:
+                return new TypeArgumentTarget(type, inp);
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     enum TypeTargetInfoType {

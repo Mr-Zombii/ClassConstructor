@@ -26,12 +26,12 @@ public class ConstantPool {
             int index = findUTF8((UTF8CONSTANT) constant);
             if (index != -1) return index;
         }
-        int index = constants.length + 1;
+        int index = constants.length;
         if (constants.length < constants.length + 1) {
-            constants = Arrays.copyOf(constants, index);
-            constants[index - 1] = constant;
+            constants = Arrays.copyOf(constants, index + 1);
+            constants[index] = constant;
         }
-        return index;
+        return index + 1;
     }
 
     public void writeToStream(DataOutputStream outputStream) throws IOException {
@@ -45,7 +45,6 @@ public class ConstantPool {
         constants = new GenericConstant[inp.readUnsignedShort() - 1];
         for (int i = 0; i < constants.length; i++) {
             GenericConstant constant = ConstantPool.readConstant(inp);
-            System.out.println("CL " + (i + 1) + " " + constant.getTag().name());
             constants[i] = constant;
         }
     }
@@ -53,25 +52,44 @@ public class ConstantPool {
     public static GenericConstant readConstant(DataInputStream inp) throws IOException {
         TagType type = TagType.fromU1(inp.readByte());
 
-        return switch (type) {
-            case CONSTANT_UTF8 -> new UTF8CONSTANT(type, inp);
-            case CONSTANT_INT -> new IntegerConstant(type, inp);
-            case CONSTANT_FLOAT -> new FloatConstant(type, inp);
-            case CONSTANT_LONG -> new LongConstant(type, inp);
-            case CONSTANT_DOUBLE -> new DoubleConstant(type, inp);
-            case CONSTANT_CLASS -> new ClassConstant(type, inp);
-            case CONSTANT_STRING -> new StringConstant(type, inp);
-            case CONSTANT_FIELD_REF -> new FieldRefConstant(type, inp);
-            case CONSTANT_METHOD_REF -> new MethodRefConstant(type, inp);
-            case CONSTANT_INTERFACE_METHOD_REF -> new InterfaceMethodRefConstant(type, inp);
-            case CONSTANT_NAME_AND_TYPE -> new NameAndTypeConstant(type, inp);
-            case CONSTANT_METHOD_HANDLE -> new MethodHandleConstant(type, inp);
-            case CONSTANT_METHOD_TYPE -> new MethodTypeConstant(type, inp);
-            case CONSTANT_DYNAMIC -> new DynamicConstant(type, inp);
-            case CONSTANT_INVOKE_DYNAMIC -> new InvokeDynamicConstant(type, inp);
-            case CONSTANT_MODULE -> new ModuleConstant(type, inp);
-            case CONSTANT_PACKAGE -> new PackageConstant(type, inp);
-        };
+        switch (type) {
+            case CONSTANT_UTF8:
+                return new UTF8CONSTANT(type, inp);
+            case CONSTANT_INT:
+                return new IntegerConstant(type, inp);
+            case CONSTANT_FLOAT:
+                return new FloatConstant(type, inp);
+            case CONSTANT_LONG:
+                return new LongConstant(type, inp);
+            case CONSTANT_DOUBLE:
+                return new DoubleConstant(type, inp);
+            case CONSTANT_CLASS:
+                return new ClassConstant(type, inp);
+            case CONSTANT_STRING:
+                return new StringConstant(type, inp);
+            case CONSTANT_FIELD_REF:
+                return new FieldRefConstant(type, inp);
+            case CONSTANT_METHOD_REF:
+                return new MethodRefConstant(type, inp);
+            case CONSTANT_INTERFACE_METHOD_REF:
+                return new InterfaceMethodRefConstant(type, inp);
+            case CONSTANT_NAME_AND_TYPE:
+                return new NameAndTypeConstant(type, inp);
+            case CONSTANT_METHOD_HANDLE:
+                return new MethodHandleConstant(type, inp);
+            case CONSTANT_METHOD_TYPE:
+                return new MethodTypeConstant(type, inp);
+            case CONSTANT_DYNAMIC:
+                return new DynamicConstant(type, inp);
+            case CONSTANT_INVOKE_DYNAMIC:
+                return new InvokeDynamicConstant(type, inp);
+            case CONSTANT_MODULE:
+                return new ModuleConstant(type, inp);
+            case CONSTANT_PACKAGE:
+                return new PackageConstant(type, inp);
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     public GenericConstant get(int i) {
@@ -89,6 +107,94 @@ public class ConstantPool {
                 return i + 1;
         }
         return -1;
+    }
+
+    public int findUTF8OrCreate(String contents) {
+        int idx = findUTF8(contents);
+        if (idx != -1) return idx;
+        return push(new UTF8CONSTANT(contents));
+    }
+
+    public String stringifyConstantSafe(GenericConstant constant) {
+        StringBuilder builder = new StringBuilder();
+        switch (constant.getTag()) {
+            case CONSTANT_UTF8:
+                builder.append(" { value: \"" + ((UTF8CONSTANT) constant).asString() + "\" }");
+                break;
+            case CONSTANT_STRING:
+                builder.append(" { idx: \"" + ((StringConstant) constant).getIndex() + "\" }");
+                break;
+            case CONSTANT_CLASS:
+                builder.append(" { idx: \"" + ((ClassConstant) constant).getNameIdx() + "\" }");
+                break;
+            case CONSTANT_NAME_AND_TYPE:
+                builder.append(" { nameIdx: \"" + ((NameAndTypeConstant) constant).getNameIndex() + "\", descriptorIdx: \"" + ((NameAndTypeConstant) constant).getDescriptorIndex() + "\" }");
+                break;
+            case CONSTANT_FIELD_REF:
+                builder.append(" { clazzIdx: " + ((FieldRefConstant) constant).getClassIndex() + ", nameAndTypeIdx: " + ((FieldRefConstant) constant).getNameAndTypeIndex() + " }");
+                break;
+            case CONSTANT_METHOD_REF:
+                builder.append(" { clazzIdx: " + ((MethodRefConstant) constant).getClassIndex() + ", nameAndTypeIdx: " + ((MethodRefConstant) constant).getNameAndTypeIndex() + " }");
+                break;
+        }
+        return builder.toString();
+    }
+
+
+    public String stringifyConstant(GenericConstant constant) {
+        StringBuilder builder = new StringBuilder();
+        switch (constant.getTag()) {
+            case CONSTANT_UTF8:
+                builder.append(" { value: \"" + ((UTF8CONSTANT) constant).asString() + "\" }");
+                break;
+            case CONSTANT_STRING:
+                builder.append(" { value: \"" + ((StringConstant) constant).getString(this) + "\" }");
+                break;
+            case CONSTANT_CLASS:
+                builder.append(" { value: \"" + ((ClassConstant) constant).getName(this) + "\" }");
+                break;
+            case CONSTANT_NAME_AND_TYPE:
+                builder.append(" { name: \"" + ((NameAndTypeConstant) constant).getName(this) + "\", descriptor: \"" + ((NameAndTypeConstant) constant).getDescriptor(this) + "\" }");
+                break;
+            case CONSTANT_FIELD_REF:
+                builder.append(" { clazz: " + stringifyConstant(((FieldRefConstant) constant).getClass(this)) + ", nameAndType: " + stringifyConstant(((FieldRefConstant) constant).getNameAndType(this)) + " }");
+                break;
+            case CONSTANT_METHOD_REF:
+                builder.append(" { clazz: " + stringifyConstant(((MethodRefConstant) constant).getClass(this)) + ", nameAndType: " + stringifyConstant(((MethodRefConstant) constant).getNameAndType(this)) + " }");
+                break;
+        }
+        return builder.toString();
+    }
+
+    @Override
+    public String toString() {
+        return asStringDeep();
+    }
+
+    public String asStringDeep() {
+        StringBuilder builder = new StringBuilder("[\n");
+        for (int i = 0; i < constants.length; i++) {
+            GenericConstant constant = constants[i];
+            builder.append("\t").append(i).append(": ");
+
+            builder.append(constant.getTag().name());
+            builder.append(stringifyConstant(constant));
+            if (i != constants.length - 1) builder.append(",");
+            builder.append("\n");
+        }
+        return builder.append("]").toString();
+    }
+
+    public String asStringSimple() {
+        StringBuilder builder = new StringBuilder("[\n");
+        for (int i = 0; i < constants.length; i++) {
+            GenericConstant constant = constants[i];
+            builder.append("\t").append(i).append(": ");
+            builder.append(constant.getTag().name());
+            if (i != constants.length - 1) builder.append(",");
+            builder.append("\n");
+        }
+        return builder.append("]").toString();
     }
 
     public enum TagType {

@@ -37,4 +37,8 @@ public class UTF8CONSTANT extends GenericConstant {
         return new String(bytes);
     }
 
+    @Override
+    public String toString() {
+        return asString();
+    }
 }

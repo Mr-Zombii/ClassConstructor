@@ -29,4 +29,8 @@ public class PackageConstant extends GenericConstant {
     public String getName(ConstantPool pool) {
         return ((UTF8CONSTANT) pool.get(nameIndex)).asString();
     }
+
+    public int getIndex() {
+        return nameIndex;
+    }
 }
