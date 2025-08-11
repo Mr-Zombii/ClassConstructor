@@ -30,8 +30,17 @@ public class DynamicConstant extends GenericConstant {
         stream.writeShort(nameAndTypeIndex);
     }
 
+    public int getNameAndTypeIndex() {
+        return nameAndTypeIndex;
+    }
+
     public int getBootstrapMethodAttrIndex() {
         return bootstrapMethodAttrIndex;
+    }
+
+    @Override
+    public String toString() {
+        return "{ type: \"" + getTag() + "\", nameAndTypeIdx: #" + nameAndTypeIndex + ", bootstrapMethodAttrIndex: #" + bootstrapMethodAttrIndex + " }";
     }
 
     public NameAndTypeConstant getNameAndType(ConstantPool pool) {

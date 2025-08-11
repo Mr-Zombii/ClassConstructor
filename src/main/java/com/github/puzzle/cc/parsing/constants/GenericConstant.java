@@ -22,4 +22,8 @@ public class GenericConstant {
         return type;
     }
 
+    public <T extends GenericConstant> T as() {
+        return (T) this;
+    }
+
 }

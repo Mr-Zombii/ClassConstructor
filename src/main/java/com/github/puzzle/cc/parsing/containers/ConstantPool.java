@@ -122,7 +122,7 @@ public class ConstantPool {
                 builder.append(" { value: \"" + ((UTF8CONSTANT) constant).asString() + "\" }");
                 break;
             case CONSTANT_STRING:
-                builder.append(" { idx: \"" + ((StringConstant) constant).getIndex() + "\" }");
+                builder.append(" { idx: \"" + ((StringConstant) constant).getStringIndex() + "\" }");
                 break;
             case CONSTANT_CLASS:
                 builder.append(" { idx: \"" + ((ClassConstant) constant).getNameIdx() + "\" }");
@@ -175,10 +175,9 @@ public class ConstantPool {
         StringBuilder builder = new StringBuilder("[\n");
         for (int i = 0; i < constants.length; i++) {
             GenericConstant constant = constants[i];
-            builder.append("\t").append(i).append(": ");
+            builder.append("\t").append(i + 1).append(": ");
 
-            builder.append(constant.getTag().name());
-            builder.append(stringifyConstant(constant));
+            builder.append(constant);
             if (i != constants.length - 1) builder.append(",");
             builder.append("\n");
         }

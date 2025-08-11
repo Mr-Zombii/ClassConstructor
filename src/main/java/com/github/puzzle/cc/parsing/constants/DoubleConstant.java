@@ -26,6 +26,11 @@ public class DoubleConstant extends GenericConstant {
         stream.writeDouble(doubleBytes);
     }
 
+    @Override
+    public String toString() {
+        return "{ type: \"" + getTag() + "\", value: #" + asDouble() + " }";
+    }
+
     public double asDouble() {
         return doubleBytes;
     }

@@ -3,428 +3,285 @@ package com.github.puzzle.cc.util;
 import com.github.puzzle.cc.parsing.constants.*;
 import com.github.puzzle.cc.parsing.containers.ConstantPool;
 
+import java.util.Objects;
+
 public class ConstantPoolUtil {
 
-    public static int findUTF8(ConstantPool pool, String value) {
+    public static int getUTF8(ConstantPool pool, String value) {
         for (int i = 0; i < pool.constants.length; i++) {
             GenericConstant constant = pool.constants[i];
-            if (
-                constant instanceof UTF8CONSTANT
-                && ((UTF8CONSTANT) constant).asString().equals(value)
-            )
-                return i;
+            if (constant instanceof UTF8CONSTANT) {
+                UTF8CONSTANT vConstant = constant.as();
+                if (vConstant.asString().equals(value))
+                    return i + 1;
+            }
         }
         return -1;
     }
 
-    public static int findUTF8OrCreate(ConstantPool pool, String value) {
-        int idx = findUTF8(pool, value);
+    public static int getOrCreateUTF8(ConstantPool pool, String value) {
+        int idx = getUTF8(pool, value);
         if (idx != -1) return idx;
         return pool.push(new UTF8CONSTANT(value));
     }
 
-    public static int findDouble(ConstantPool pool, double value) {
+    public static int getLong(ConstantPool pool, long value) {
         for (int i = 0; i < pool.constants.length; i++) {
             GenericConstant constant = pool.constants[i];
-            if (
-                    constant instanceof DoubleConstant
-                            && ((DoubleConstant) constant).asDouble() == value
-            )
-                return i;
+            if (constant instanceof LongConstant) {
+                LongConstant vConstant = constant.as();
+                if (Objects.equals(vConstant.asLong(), value))
+                    return i + 1;
+            }
         }
         return -1;
     }
 
-    public static int findDoubleOrCreate(ConstantPool pool, double value) {
-        int idx = findDouble(pool, value);
-        if (idx != -1) return idx;
-        return pool.push(new DoubleConstant(value));
-    }
-
-    public static int findLong(ConstantPool pool, long value) {
-        for (int i = 0; i < pool.constants.length; i++) {
-            GenericConstant constant = pool.constants[i];
-            if (
-                    constant instanceof LongConstant
-                            && ((LongConstant) constant).asLong() == value
-            )
-                return i;
-        }
-        return -1;
-    }
-
-    public static int findLongOrCreate(ConstantPool pool, long value) {
-        int idx = findLong(pool, value);
+    public static int getOrCreateLong(ConstantPool pool, long value) {
+        int idx = getLong(pool, value);
         if (idx != -1) return idx;
         return pool.push(new LongConstant(value));
     }
 
-    public static int findFloat(ConstantPool pool, float value) {
+    public static int getDouble(ConstantPool pool, double value) {
         for (int i = 0; i < pool.constants.length; i++) {
             GenericConstant constant = pool.constants[i];
-            if (
-                    constant instanceof FloatConstant
-                            && ((FloatConstant) constant).asFloat() == value
-            )
-                return i;
+            if (constant instanceof DoubleConstant) {
+                DoubleConstant vConstant = constant.as();
+                if (Objects.equals(vConstant.asDouble(), value))
+                    return i + 1;
+            }
         }
         return -1;
     }
 
-    public static int findFloatOrCreate(ConstantPool pool, float value) {
-        int idx = findFloat(pool, value);
+    public static int getOrCreateDouble(ConstantPool pool, double value) {
+        int idx = getDouble(pool, value);
         if (idx != -1) return idx;
-        return pool.push(new FloatConstant(value));
+        return pool.push(new DoubleConstant(value));
     }
 
-    public static int findInteger(ConstantPool pool, int value) {
+    public static int getInteger(ConstantPool pool, int value) {
         for (int i = 0; i < pool.constants.length; i++) {
             GenericConstant constant = pool.constants[i];
-            if (
-                    constant instanceof IntegerConstant
-                            && ((IntegerConstant) constant).asInt() == value
-            )
-                return i;
+            if (constant instanceof IntegerConstant) {
+                IntegerConstant vConstant = constant.as();
+                if (Objects.equals(vConstant.asInteger(), value))
+                    return i + 1;
+            }
         }
         return -1;
     }
 
-    public static int findIntegerOrCreate(ConstantPool pool, int value) {
-        int idx = findInteger(pool, value);
+    public static int getOrCreateInteger(ConstantPool pool, int value) {
+        int idx = getInteger(pool, value);
         if (idx != -1) return idx;
         return pool.push(new IntegerConstant(value));
     }
 
-    public static int findString(ConstantPool pool, String value) {
-        int utf8Idx = findUTF8(pool, value);
-        if (utf8Idx == -1) return -1;
-        return findString(pool, utf8Idx);
-    }
-
-    public static int findStringOrCreate(ConstantPool pool, String value) {
-        int utf8Idx = findUTF8OrCreate(pool, value);
-        int idx = findString(pool, utf8Idx);
-        if (idx != -1) return idx;
-        return pool.push(new StringConstant(utf8Idx));
-    }
-
-    public static int findString(ConstantPool pool, int utf8Idx) {
+    public static int getFloat(ConstantPool pool, float value) {
         for (int i = 0; i < pool.constants.length; i++) {
             GenericConstant constant = pool.constants[i];
-            if (
-                    constant instanceof StringConstant
-                            && ((StringConstant) constant).getIndex() == utf8Idx
-            )
-                return i;
+            if (constant instanceof FloatConstant) {
+                FloatConstant vConstant = constant.as();
+                if (Objects.equals(vConstant.asFloat(), value))
+                    return i + 1;
+            }
         }
         return -1;
     }
 
-    public static int findStringOrCreate(ConstantPool pool, int utf8Idx) {
-        int idx = findString(pool, utf8Idx);
+    public static int getOrCreateFloat(ConstantPool pool, float value) {
+        int idx = getFloat(pool, value);
         if (idx != -1) return idx;
-        return pool.push(new StringConstant(utf8Idx));
+        return pool.push(new FloatConstant(value));
     }
 
-    public static int findClass(ConstantPool pool, int utf8Idx) {
+    public static int getString(ConstantPool pool, String value) {
+        int idx0 = getUTF8(pool, value);
+        if (idx0 == -1) return -1;
+
         for (int i = 0; i < pool.constants.length; i++) {
             GenericConstant constant = pool.constants[i];
-            if (
-                    constant instanceof ClassConstant
-                            && ((ClassConstant) constant).getNameIdx() == utf8Idx
-            )
-                return i;
+            if (constant instanceof StringConstant) {
+                StringConstant vConstant = constant.as();
+                if (Objects.equals(vConstant.getStringIndex(), idx0))
+                    return i + 1;
+            }
         }
         return -1;
     }
 
-    public static int findClassOrCreate(ConstantPool pool, int utf8Idx) {
-        int idx = findClass(pool, utf8Idx);
+    public static int getOrCreateString(ConstantPool pool, String value) {
+        int idx = getString(pool, value);
         if (idx != -1) return idx;
-        return pool.push(new ClassConstant(utf8Idx));
+        return pool.push(new StringConstant(getOrCreateUTF8(pool, value)));
     }
 
-    public static int findClass(ConstantPool pool, String value) {
-        int utf8Idx = findUTF8(pool, value);
-        if (utf8Idx == -1) return -1;
-        return findClass(pool, utf8Idx);
-    }
+    public static int getClass(ConstantPool pool, String value) {
+        int idx0 = getUTF8(pool, value);
+        if (idx0 == -1) return -1;
 
-    public static int findClassOrCreate(ConstantPool pool, String value) {
-        int utf8Idx = findUTF8OrCreate(pool, value);
-        int idx = findClass(pool, utf8Idx);
-        if (idx != -1) return idx;
-        return pool.push(new ClassConstant(utf8Idx));
-    }
-
-    public static int findMethodType(ConstantPool pool, int utf8Idx) {
         for (int i = 0; i < pool.constants.length; i++) {
             GenericConstant constant = pool.constants[i];
-            if (
-                    constant instanceof MethodTypeConstant
-                            && ((MethodTypeConstant) constant).getDescriptorIndex() == utf8Idx
-            )
-                return i;
+            if (constant instanceof ClassConstant) {
+                ClassConstant vConstant = constant.as();
+                if (Objects.equals(vConstant.getNameIdx(), idx0))
+                    return i + 1;
+            }
         }
         return -1;
     }
 
-    public static int findMethodTypeOrCreate(ConstantPool pool, int utf8Idx) {
-        int idx = findMethodType(pool, utf8Idx);
+    public static int getOrCreateClass(ConstantPool pool, String value) {
+        int idx = getClass(pool, value);
         if (idx != -1) return idx;
-        return pool.push(new ClassConstant(utf8Idx));
+        return pool.push(new ClassConstant(getOrCreateUTF8(pool, value)));
     }
 
-    public static int findMethodType(ConstantPool pool, String value) {
-        int utf8Idx = findUTF8(pool, value);
-        if (utf8Idx == -1) return -1;
-        return findMethodType(pool, utf8Idx);
-    }
+    public static int getMethodType(ConstantPool pool, String value) {
+        int idx0 = getUTF8(pool, value);
+        if (idx0 == -1) return -1;
 
-    public static int findMethodTypeOrCreate(ConstantPool pool, String value) {
-        int utf8Idx = findUTF8OrCreate(pool, value);
-        int idx = findMethodType(pool, utf8Idx);
-        if (idx != -1) return idx;
-        return pool.push(new MethodTypeConstant(utf8Idx));
-    }
-
-    public static int findModule(ConstantPool pool, int utf8Idx) {
         for (int i = 0; i < pool.constants.length; i++) {
             GenericConstant constant = pool.constants[i];
-            if (
-                    constant instanceof ModuleConstant
-                            && ((ModuleConstant) constant).getNameIndex() == utf8Idx
-            )
-                return i;
+            if (constant instanceof MethodTypeConstant) {
+                MethodTypeConstant vConstant = constant.as();
+                if (Objects.equals(vConstant.getDescriptorIndex(), idx0))
+                    return i + 1;
+            }
         }
         return -1;
     }
 
-    public static int findModuleOrCreate(ConstantPool pool, int utf8Idx) {
-        int idx = findModule(pool, utf8Idx);
+    public static int getOrCreateMethodType(ConstantPool pool, String value) {
+        int idx = getMethodType(pool, value);
         if (idx != -1) return idx;
-        return pool.push(new ClassConstant(utf8Idx));
+        return pool.push(new MethodTypeConstant(getOrCreateUTF8(pool, value)));
     }
 
-    public static int findModule(ConstantPool pool, String value) {
-        int utf8Idx = findUTF8(pool, value);
-        if (utf8Idx == -1) return -1;
-        return findModule(pool, utf8Idx);
-    }
+    public static int getPackage(ConstantPool pool, String value) {
+        int idx0 = getUTF8(pool, value);
+        if (idx0 == -1) return -1;
 
-    public static int findModuleOrCreate(ConstantPool pool, String value) {
-        int utf8Idx = findUTF8OrCreate(pool, value);
-        int idx = findModule(pool, utf8Idx);
-        if (idx != -1) return idx;
-        return pool.push(new ModuleConstant(utf8Idx));
-    }
-
-    public static int findPackage(ConstantPool pool, int utf8Idx) {
         for (int i = 0; i < pool.constants.length; i++) {
             GenericConstant constant = pool.constants[i];
-            if (
-                    constant instanceof PackageConstant
-                            && ((PackageConstant) constant).getIndex() == utf8Idx
-            )
-                return i;
+            if (constant instanceof PackageConstant) {
+                PackageConstant vConstant = constant.as();
+                if (Objects.equals(vConstant.getNameIndex(), idx0))
+                    return i + 1;
+            }
         }
         return -1;
     }
 
-    public static int findPackageOrCreate(ConstantPool pool, int utf8Idx) {
-        int idx = findPackage(pool, utf8Idx);
+    public static int getOrCreatePackage(ConstantPool pool, String value) {
+        int idx = getPackage(pool, value);
         if (idx != -1) return idx;
-        return pool.push(new ClassConstant(utf8Idx));
+        return pool.push(new PackageConstant(getOrCreateUTF8(pool, value)));
     }
 
-    public static int findPackage(ConstantPool pool, String value) {
-        int utf8Idx = findUTF8(pool, value);
-        if (utf8Idx == -1) return -1;
-        return findPackage(pool, utf8Idx);
-    }
+    public static int getModule(ConstantPool pool, String value) {
+        int idx0 = getUTF8(pool, value);
+        if (idx0 == -1) return -1;
 
-    public static int findPackageOrCreate(ConstantPool pool, String value) {
-        int utf8Idx = findUTF8OrCreate(pool, value);
-        int idx = findPackage(pool, utf8Idx);
-        if (idx != -1) return idx;
-        return pool.push(new PackageConstant(utf8Idx));
-    }
-
-    public static int findNameAndTypeConstant(
-            ConstantPool pool,
-            int nameUTF8Idx, int descriptorUTF8Idx
-    ) {
         for (int i = 0; i < pool.constants.length; i++) {
             GenericConstant constant = pool.constants[i];
-            if (
-                    constant instanceof NameAndTypeConstant
-                            && ((NameAndTypeConstant) constant).getNameIndex() == nameUTF8Idx
-                            && ((NameAndTypeConstant) constant).getDescriptorIndex() == descriptorUTF8Idx
-            )
-                return i;
+            if (constant instanceof ModuleConstant) {
+                ModuleConstant vConstant = constant.as();
+                if (Objects.equals(vConstant.getNameIndex(), idx0))
+                    return i + 1;
+            }
         }
         return -1;
     }
 
-    public static int findNameAndTypeConstant(
-            ConstantPool pool,
-            String name, int descriptorUTF8Idx
-    ) {
-        int nameUTF8 = findUTF8(pool, name);
-        if (nameUTF8 == -1) return -1;
-
-        return findNameAndTypeConstant(pool, nameUTF8, descriptorUTF8Idx);
-    }
-
-    public static int findNameAndTypeConstant(
-            ConstantPool pool,
-            int nameUTF8, String descriptor
-    ) {
-        int descUTF8 = findUTF8(pool, descriptor);
-        if (descUTF8 == -1) return -1;
-
-        return findNameAndTypeConstant(pool, nameUTF8, descUTF8);
-    }
-
-    public static int findNameAndTypeConstant(
-            ConstantPool pool,
-            String name, String descriptor
-    ) {
-        int nameUTF8 = findUTF8(pool, name);
-        if (nameUTF8 == -1) return -1;
-        int descUTF8 = findUTF8(pool, descriptor);
-        if (descUTF8 == -1) return -1;
-
-        return findNameAndTypeConstant(pool, nameUTF8, descUTF8);
-    }
-
-    public static int findNameAndTypeConstantOrCreate(
-            ConstantPool pool,
-            int nameUTF8Idx, int descriptorUTF8Idx
-    ) {
-        int idx = findNameAndTypeConstant(pool, nameUTF8Idx, descriptorUTF8Idx);
+    public static int getOrCreateModule(ConstantPool pool, String value) {
+        int idx = getModule(pool, value);
         if (idx != -1) return idx;
-        return pool.push(new NameAndTypeConstant(nameUTF8Idx, descriptorUTF8Idx));
+        return pool.push(new ModuleConstant(getOrCreateUTF8(pool, value)));
     }
 
-    public static int findNameAndTypeConstantOrCreate(
-            ConstantPool pool,
-            String name, int descUTF8
-    ) {
-        int nameUTF8 = findUTF8OrCreate(pool, name);
+    public static int getNameAndType(ConstantPool pool, String name, String type) {
+        int idx0 = getUTF8(pool, name);
+        if (idx0 == -1) return -1;
+        int idx1 = getUTF8(pool, type);
+        if (idx1 == -1) return -1;
 
-        return findNameAndTypeConstantOrCreate(pool, nameUTF8, descUTF8);
-    }
-
-    public static int findNameAndTypeConstantOrCreate(
-            ConstantPool pool,
-            int nameUTF8, String descriptor
-    ) {
-        int descUTF8 = findUTF8OrCreate(pool, descriptor);
-
-        return findNameAndTypeConstantOrCreate(pool, nameUTF8, descUTF8);
-    }
-
-    public static int findNameAndTypeConstantOrCreate(
-            ConstantPool pool,
-            String name, String descriptor
-    ) {
-        int nameUTF8 = findUTF8OrCreate(pool, name);
-        int descUTF8 = findUTF8OrCreate(pool, descriptor);
-
-        return findNameAndTypeConstantOrCreate(pool, nameUTF8, descUTF8);
-    }
-
-    public static int findFieldRefConstant(
-            ConstantPool pool,
-            int classIdx, int nameAndTypeIdx
-    ) {
         for (int i = 0; i < pool.constants.length; i++) {
             GenericConstant constant = pool.constants[i];
-            if (
-                    constant instanceof FieldRefConstant
-                            && ((FieldRefConstant) constant).getClassIndex() == classIdx
-                            && ((FieldRefConstant) constant).getNameAndTypeIndex() == nameAndTypeIdx
-            )
-                return i;
+            if (constant instanceof NameAndTypeConstant) {
+                NameAndTypeConstant vConstant = constant.as();
+                if (!Objects.equals(vConstant.getNameIndex(), idx0)) continue;
+                if (Objects.equals(vConstant.getDescriptorIndex(), idx1))
+                    return i + 1;
+            }
         }
         return -1;
     }
 
-    public static int findFieldRefConstantOrCreate(
-            ConstantPool pool,
-            int classIdx, int nameAndTypeIdx
-    ) {
-        int idx = findFieldRefConstant(pool, classIdx, nameAndTypeIdx);
-        if (idx == -1) return pool.push(new FieldRefConstant(classIdx, nameAndTypeIdx));
-        return idx;
+    public static int getOrCreateNameAndType(ConstantPool pool, String name, String type) {
+        int idx = getNameAndType(pool, name, type);
+        if (idx != -1) return idx;
+        return pool.push(new NameAndTypeConstant(
+                getOrCreateUTF8(pool, name),
+                getOrCreateUTF8(pool, type)
+        ));
     }
 
-    public static int findFieldRefConstant(
-            ConstantPool pool,
-            String clazz, String name, String descriptor
-    ) {
-        int classIdx = findClass(pool, clazz);
-        if (classIdx == -1) return -1;
-        int nameAndTypeIdx = findNameAndTypeConstant(pool, name, descriptor);
-        if (nameAndTypeIdx == -1) return -1;
-        return findFieldRefConstant(pool, classIdx, nameAndTypeIdx);
-    }
+    public static int getFieldRef(ConstantPool pool, String clazz, String name, String type) {
+        int idx0 = getClass(pool, clazz);
+        if (idx0 == -1) return -1;
+        int idx1 = getNameAndType(pool, name, type);
+        if (idx1 == -1) return -1;
 
-    public static int findFieldRefConstantOrCreate(
-            ConstantPool pool,
-            String clazz, String name, String descriptor
-    ) {
-        int classIdx = findClassOrCreate(pool, clazz);
-        int nameAndTypeIdx = findNameAndTypeConstantOrCreate(pool, name, descriptor);
-        if (nameAndTypeIdx == -1) return -1;
-        return findFieldRefConstantOrCreate(pool, classIdx, nameAndTypeIdx);
-    }
-
-    public static int findMethodRefConstant(
-            ConstantPool pool,
-            int classIdx, int nameAndTypeIdx
-    ) {
         for (int i = 0; i < pool.constants.length; i++) {
             GenericConstant constant = pool.constants[i];
-            if (
-                    constant instanceof MethodRefConstant
-                            && ((MethodRefConstant) constant).getClassIndex() == classIdx
-                            && ((MethodRefConstant) constant).getNameAndTypeIndex() == nameAndTypeIdx
-            )
-                return i;
+            if (constant instanceof FieldRefConstant) {
+                FieldRefConstant vConstant = constant.as();
+                if (!Objects.equals(vConstant.getClassIndex(), idx0)) continue;
+                if (Objects.equals(vConstant.getNameAndTypeIndex(), idx1))
+                    return i + 1;
+            }
         }
         return -1;
     }
 
-    public static int findMethodRefConstantOrCreate(
-            ConstantPool pool,
-            int classIdx, int nameAndTypeIdx
-    ) {
-        int idx = findMethodRefConstant(pool, classIdx, nameAndTypeIdx);
-        if (idx == -1) return pool.push(new MethodRefConstant(classIdx, nameAndTypeIdx));
-        return idx;
+    public static int getOrCreateFieldRef(ConstantPool pool, String clazz, String name, String type) {
+        int idx = getFieldRef(pool, clazz, name, type);
+        if (idx != -1) return idx;
+
+        return pool.push(new FieldRefConstant(
+                getOrCreateClass(pool, clazz),
+                getOrCreateNameAndType(pool, name, type)
+        ));
     }
 
-    public static int findMethodRefConstant(
-            ConstantPool pool,
-            String clazz, String name, String descriptor
-    ) {
-        int classIdx = findClass(pool, clazz);
-        if (classIdx == -1) return -1;
-        int nameAndTypeIdx = findNameAndTypeConstant(pool, name, descriptor);
-        if (nameAndTypeIdx == -1) return -1;
-        return findMethodRefConstant(pool, classIdx, nameAndTypeIdx);
+    public static int getMethodRef(ConstantPool pool, String clazz, String name, String type) {
+        int idx0 = getClass(pool, clazz);
+        if (idx0 == -1) return -1;
+        int idx1 = getNameAndType(pool, name, type);
+        if (idx1 == -1) return -1;
+
+        for (int i = 0; i < pool.constants.length; i++) {
+            GenericConstant constant = pool.constants[i];
+            if (constant instanceof MethodRefConstant) {
+                MethodRefConstant vConstant = constant.as();
+                if (!Objects.equals(vConstant.getClassIndex(), idx0)) continue;
+                if (Objects.equals(vConstant.getNameAndTypeIndex(), idx1))
+                    return i + 1;
+            }
+        }
+        return -1;
     }
 
-    public static int findMethodRefConstantOrCreate(
-            ConstantPool pool,
-            String clazz, String name, String descriptor
-    ) {
-        int classIdx = findClassOrCreate(pool, clazz);
-        int nameAndTypeIdx = findNameAndTypeConstantOrCreate(pool, name, descriptor);
-        if (nameAndTypeIdx == -1) return -1;
-        return findMethodRefConstantOrCreate(pool, classIdx, nameAndTypeIdx);
+    public static int getOrCreateMethodRef(ConstantPool pool, String clazz, String name, String type) {
+        int idx = getMethodRef(pool, clazz, name, type);
+        if (idx != -1) return idx;
+        return pool.push(new MethodRefConstant(
+                getOrCreateClass(pool, clazz),
+                getOrCreateNameAndType(pool, name, type)
+        ));
     }
 
 }

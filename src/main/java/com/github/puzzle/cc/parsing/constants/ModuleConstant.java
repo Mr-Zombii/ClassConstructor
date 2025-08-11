@@ -33,4 +33,9 @@ public class ModuleConstant extends GenericConstant {
     public int getNameIndex() {
         return nameIndex;
     }
+
+    @Override
+    public String toString() {
+        return "{ type: \"" + getTag() + "\", nameIdx: #" + getNameIndex() + " }";
+    }
 }

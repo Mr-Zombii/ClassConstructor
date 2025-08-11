@@ -39,6 +39,7 @@ public class UTF8CONSTANT extends GenericConstant {
 
     @Override
     public String toString() {
-        return asString();
+        return "{ type: \"" + getTag() + "\", value: \"" + asString() + "\" }";
     }
+
 }

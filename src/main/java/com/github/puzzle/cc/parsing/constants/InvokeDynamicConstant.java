@@ -38,4 +38,9 @@ public class InvokeDynamicConstant extends GenericConstant {
         return ((NameAndTypeConstant) pool.get(nameAndTypeIndex));
     }
 
+    @Override
+    public String toString() {
+        return "{ type: \"" + getTag() + "\", nameAndTypeIdx: #" + nameAndTypeIndex + ", bootstrapMethodAttrIdx: #" + bootstrapMethodAttrIndex + " }";
+    }
+
 }

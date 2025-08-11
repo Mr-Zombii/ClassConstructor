@@ -3,6 +3,7 @@ package com.github.puzzle.cc.parsing.attributes;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 
 public class LocalVariableTableAttribute extends AttributeInfo {
 
@@ -15,6 +16,12 @@ public class LocalVariableTableAttribute extends AttributeInfo {
         for (int i = 0; i < localVariables.length; i++) {
             localVariables[i] = new LocalVariableType(inp);
         }
+    }
+
+    public LocalVariableTableAttribute(int nameIdx, int length, Collection<LocalVariableTableAttribute.LocalVariableType> localVariables) {
+        super(nameIdx, length, null);
+
+        this.localVariables = localVariables.toArray(new LocalVariableType[0]);
     }
 
     @Override
@@ -32,14 +39,23 @@ public class LocalVariableTableAttribute extends AttributeInfo {
         int startPc;
         int length;
         int nameIndex;
-        int signatureIndex;
+        int descriptorIndex;
         int index;
+
+
+        public LocalVariableType(int startPc, int length, int nameIndex, int descriptorIndex, int index) {
+            this.startPc = startPc;
+            this.length = length;
+            this.nameIndex = nameIndex;
+            this.descriptorIndex = descriptorIndex;
+            this.index = index;
+        }
 
         public LocalVariableType(DataInputStream inp) throws IOException {
             startPc = inp.readUnsignedShort();
             length = inp.readUnsignedShort();
             nameIndex = inp.readUnsignedShort();
-            signatureIndex = inp.readUnsignedShort();
+            descriptorIndex = inp.readUnsignedShort();
             index = inp.readUnsignedShort();
         }
 
@@ -47,7 +63,7 @@ public class LocalVariableTableAttribute extends AttributeInfo {
             outputStream.writeShort(startPc);
             outputStream.writeShort(length);
             outputStream.writeShort(nameIndex);
-            outputStream.writeShort(signatureIndex);
+            outputStream.writeShort(descriptorIndex);
             outputStream.writeShort(index);
         }
 

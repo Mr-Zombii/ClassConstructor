@@ -8,6 +8,7 @@ import com.github.puzzle.cc.parsing.bytecode.opcodes.Instruction;
 import com.github.puzzle.cc.parsing.constants.UTF8CONSTANT;
 import com.github.puzzle.cc.parsing.containers.Attributes;
 import com.github.puzzle.cc.parsing.containers.ConstantPool;
+import com.github.puzzle.cc.util.ConstantPoolUtil;
 import com.github.puzzle.cc.writer.bytecode.BytecodeWriter;
 
 import java.io.*;
@@ -18,12 +19,11 @@ import java.util.List;
 public class CodeAttributeBuilder {
     private final int maxStack;
     private final int maxLocals;
-    private int index;
     ConstantPool pool;
 
     List<CodeAttribute.ExceptionValue> exceptions = new ArrayList<>();
     int currentPc;
-    private Attributes attributes = new Attributes();
+    private final Attributes attributes = new Attributes();
     private BytecodeContainer container;
 
     public CodeAttributeBuilder(ConstantPool pool, int maxStack, int maxLocals) {
@@ -31,8 +31,6 @@ public class CodeAttributeBuilder {
         this.maxLocals = maxLocals;
 
         this.pool = pool;
-        index = pool.findUTF8("Code");
-        if (index == -1) index = pool.push(new UTF8CONSTANT("Code"));
         this.container = new BytecodeContainer();
     }
 
@@ -78,6 +76,7 @@ public class CodeAttributeBuilder {
             }
         }
 
+        int index = ConstantPoolUtil.getOrCreateUTF8(pool, "Code");
         return new CodeAttribute(pool, index, maxStack, maxLocals, bytes.length, code, exceptions.toArray(new CodeAttribute.ExceptionValue[0]), attributes);
     }
 

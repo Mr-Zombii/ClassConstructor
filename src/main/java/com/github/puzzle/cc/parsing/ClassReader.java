@@ -55,7 +55,6 @@ public class ClassReader {
             }
         };
         constantPool = new ConstantPool(inp);
-        System.out.println(constantPool);
 
         rawAccessFlags = inp.readUnsignedShort();
         accessFlags = ClassAccessFlag.getFromFlags(rawAccessFlags);

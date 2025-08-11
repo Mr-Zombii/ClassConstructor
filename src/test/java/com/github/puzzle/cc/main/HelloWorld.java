@@ -13,6 +13,9 @@ public class HelloWorld {
 //            default:   System.out.println("A");
 //        }
 
+        int[][] a = new int[2][2];
+        a[2][2] = 1;
+
         System.out.println(HELLOWORLD);
         System.out.println("Hello World");
     }

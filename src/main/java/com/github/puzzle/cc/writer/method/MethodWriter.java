@@ -28,7 +28,7 @@ public class MethodWriter {
         nameIndex = info.nameIndex;
         name = ((UTF8CONSTANT)writer.constantPool.get(info.nameIndex)).asString();
         descriptor = ((UTF8CONSTANT)writer.constantPool.get(info.descriptorIndex)).asString();
-        flags.addAll(List.of(info.accessFlags));
+        flags.addAll(Arrays.asList(info.accessFlags));
         attributes = info.attributes;
     }
 

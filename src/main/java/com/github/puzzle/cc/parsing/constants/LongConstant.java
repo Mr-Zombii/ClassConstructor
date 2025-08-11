@@ -26,6 +26,10 @@ public class LongConstant extends GenericConstant {
         stream.writeLong(longBytes);
     }
 
+    @Override
+    public String toString() {
+        return "{ type: \"" + getTag() + "\", value: #" + asLong() + " }";
+    }
 
     public long asLong() {
         return longBytes;

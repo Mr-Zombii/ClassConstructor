@@ -33,4 +33,9 @@ public class MethodTypeConstant extends GenericConstant {
     public int getDescriptorIndex() {
         return descriptorIndex;
     }
+
+    @Override
+    public String toString() {
+        return "{ type: \"" + getTag() + "\", descriptorIdx: #" + descriptorIndex + " }";
+    }
 }

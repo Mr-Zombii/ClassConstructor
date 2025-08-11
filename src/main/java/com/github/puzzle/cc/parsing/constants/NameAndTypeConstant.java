@@ -45,4 +45,9 @@ public class NameAndTypeConstant extends GenericConstant {
     public int getDescriptorIndex() {
         return descriptorIndex;
     }
+
+    @Override
+    public String toString() {
+        return "{ type: \"" + getTag() + "\", nameIdx: #" + nameIndex + ", descriptorIdx: #" + descriptorIndex + " }";
+    }
 }

@@ -95,6 +95,10 @@ public class CodeAttribute extends AttributeInfo {
                 '}';
     }
 
+    public short[] getCode() {
+        return code;
+    }
+
     public static class ExceptionValue {
         int startPc;
         int endPc;
@@ -137,5 +141,9 @@ public class CodeAttribute extends AttributeInfo {
     @Override
     public String getType() {
         return "Code";
+    }
+
+    public Attributes getAttributes() {
+        return attributes;
     }
 }

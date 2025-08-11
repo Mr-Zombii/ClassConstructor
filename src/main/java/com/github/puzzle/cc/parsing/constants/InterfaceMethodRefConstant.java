@@ -38,4 +38,9 @@ public class InterfaceMethodRefConstant extends GenericConstant {
         return ((NameAndTypeConstant) pool.get(nameAndTypeIndex));
     }
 
+    @Override
+    public String toString() {
+        return "{ type: \"" + getTag() + "\", classIdx: #" + classIndex + ", nameAndTypeIdx: #" + nameAndTypeIndex + " }";
+    }
+
 }

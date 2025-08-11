@@ -49,4 +49,9 @@ public class MethodHandleConstant extends GenericConstant {
         REF_INVOKE_SPECIAL,
         REF_INVOKE_INTERFACE
     }
+
+    @Override
+    public String toString() {
+        return "{ type: \"" + getTag() + "\", refKind: #" + referenceKind + ", refIdx: #" + referenceIndex + " }";
+    }
 }

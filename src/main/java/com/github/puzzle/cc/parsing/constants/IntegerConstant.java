@@ -27,8 +27,12 @@ public class IntegerConstant extends GenericConstant {
         stream.writeInt(intBytes);
     }
 
+    @Override
+    public String toString() {
+        return "{ type: \"" + getTag() + "\", value: #" + asInteger() + " }";
+    }
 
-    public int asInt() {
+    public int asInteger() {
         return intBytes;
     }
 

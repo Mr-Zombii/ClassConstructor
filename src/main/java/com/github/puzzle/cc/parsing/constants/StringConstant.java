@@ -30,7 +30,12 @@ public class StringConstant extends GenericConstant {
         return ((UTF8CONSTANT) pool.get(stringIndex)).asString();
     }
 
-    public int getIndex() {
+    @Override
+    public String toString() {
+        return "{ type: \"" + getTag() + "\", stringIdx: #" + getStringIndex() + " }";
+    }
+
+    public int getStringIndex() {
         return stringIndex;
     }
 }

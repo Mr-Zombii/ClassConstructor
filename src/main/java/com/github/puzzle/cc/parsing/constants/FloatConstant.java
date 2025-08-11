@@ -26,6 +26,10 @@ public class FloatConstant extends GenericConstant {
         stream.writeFloat(floatBytes);
     }
 
+    @Override
+    public String toString() {
+        return "{ type: \"" + getTag() + "\", value: #" + asFloat() + " }";
+    }
 
     public float asFloat() {
         return floatBytes;

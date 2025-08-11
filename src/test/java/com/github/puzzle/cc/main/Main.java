@@ -22,6 +22,7 @@ public class Main {
 
             for (MethodInfo method : reader.methods) {
                 String name = reader.constantPool.get(method.nameIndex).toString();
+                System.out.println(name);
                 if (Objects.equals(name, "main")) {
                     System.out.println(method.attributes.get("Code"));
                 }

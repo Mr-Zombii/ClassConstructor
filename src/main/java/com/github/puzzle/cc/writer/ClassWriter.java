@@ -1,11 +1,10 @@
 package com.github.puzzle.cc.writer;
 
 import com.github.puzzle.cc.access.ClassAccessFlag;
-import com.github.puzzle.cc.access.FieldAccessFlag;
 import com.github.puzzle.cc.access.MethodAccessFlags;
 import com.github.puzzle.cc.parsing.ClassReader;
 import com.github.puzzle.cc.parsing.attributes.AttributeInfo;
-import com.github.puzzle.cc.parsing.attributes.ConstantValueAttribute;
+import com.github.puzzle.cc.parsing.attributes.CodeAttribute;
 import com.github.puzzle.cc.parsing.attributes.SourceFileAttribute;
 import com.github.puzzle.cc.parsing.bytecode.Opcodes;
 import com.github.puzzle.cc.parsing.constants.*;
@@ -16,13 +15,15 @@ import com.github.puzzle.cc.parsing.methods.MethodInfo;
 import com.github.puzzle.cc.util.ConstantPoolUtil;
 import com.github.puzzle.cc.util.Pair;
 import com.github.puzzle.cc.writer.attribute.CodeAttributeBuilder;
+import com.github.puzzle.cc.writer.attribute.LocalVariableTableAttributeBuilder;
+import com.github.puzzle.cc.writer.attribute.LocalVariableTypeTableAttributeBuilder;
 import com.github.puzzle.cc.writer.bytecode.BytecodeWriter;
 import com.github.puzzle.cc.writer.field.FieldWriter;
 import com.github.puzzle.cc.writer.method.MethodWriter;
+import com.github.puzzle.cc.writer.stdlib.CCWriterUtil;
 
 import java.io.*;
 import java.util.*;
-import java.util.function.BiConsumer;
 
 public class ClassWriter {
 
@@ -185,17 +186,17 @@ public class ClassWriter {
             BytecodeWriter bytecodeWriter,
             String value
     ) {
-        int outCtx = ConstantPoolUtil.findFieldRefConstantOrCreate(
+        int outCtx = ConstantPoolUtil.getOrCreateFieldRef(
                 writer.constantPool,
                 "java/lang/System", "out", "Ljava/io/PrintStream;"
         );
 
-        int printCts = ConstantPoolUtil.findMethodRefConstantOrCreate(
+        int printCts = ConstantPoolUtil.getOrCreateMethodRef(
                 writer.constantPool,
                 "java/io/PrintStream", "println", "(Ljava/lang/String;)V"
         );
 
-        int str = ConstantPoolUtil.findStringOrCreate(writer.constantPool, value);
+        int str = ConstantPoolUtil.getOrCreateString(writer.constantPool, value);
 
         bytecodeWriter.putInstructionA(Opcodes.GETSTATIC, (short) (outCtx));
         bytecodeWriter.putInstructionV(Opcodes.LDC, (short) (str));
@@ -213,16 +214,29 @@ public class ClassWriter {
         MethodWriter methodWriter = writer.addMethod("main", void.class, String[].class);
         methodWriter.addAccessFlag(MethodAccessFlags.ACC_PUBLIC, MethodAccessFlags.ACC_STATIC);
         CodeAttributeBuilder builder = new CodeAttributeBuilder(writer.constantPool, 10, 10);
+        LocalVariableTypeTableAttributeBuilder builder1 = new LocalVariableTypeTableAttributeBuilder(writer.constantPool);
+        LocalVariableTableAttributeBuilder builder2 = new LocalVariableTableAttributeBuilder(writer.constantPool);
+
         BytecodeWriter bytecodeWriter = new BytecodeWriter(new ArrayList<>());
-        println(writer, bytecodeWriter, "Hello World");
-        bytecodeWriter.putInstruction(Opcodes.RETURN);
+        CCWriterUtil.test(writer, bytecodeWriter);
         builder.write(bytecodeWriter);
-        methodWriter.addAttribute(builder.end());
+        bytecodeWriter.putInstruction(Opcodes.RETURN);
+//        CodeAttribute attribute = builder.end();
+
+        builder2.addVar(0, 11, "cliArgs", "[Ljava/lang/String;", 0);
+//        attribute.getAttributes().push(builder2.end());
+        builder.getAttributes().push(builder2.end());
+        CodeAttribute attribute = builder.end();
+//        builder1.addVar(0, 11, "cliArgs", "[Ljava/lang/String;", 0);
+//        builder.getAttributes().push(builder1.end());
+
+        methodWriter.addAttribute(attribute);
+        System.out.println(writer.constantPool);
 
 //        FieldWriter fieldWriter = writer.addField("text", String.class);
 //        int valueNameIndex = writer.pushConstant(new UTF8CONSTANT("ConstantValue"));
 //        int value = writer.pushConstant(new StringConstant(writer.pushConstant(new UTF8CONSTANT("Hola"))));
-//
+
 //        fieldWriter.getAttributes().push(new ConstantValueAttribute(valueNameIndex, value));
 //        fieldWriter.addAccessFlag(FieldAccessFlag.ACC_PUBLIC, FieldAccessFlag.ACC_FINAL, FieldAccessFlag.ACC_STATIC);
 
@@ -232,7 +246,6 @@ public class ClassWriter {
             outputStream.write(writer.toBytes());
 
             ClassReader reader = new ClassReader(writer.toBytes());
-            System.out.println(reader.constantPool.toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

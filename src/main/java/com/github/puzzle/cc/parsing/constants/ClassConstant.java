@@ -30,6 +30,11 @@ public class ClassConstant extends GenericConstant {
         return ((UTF8CONSTANT)pool.get(nameIndex)).asString();
     }
 
+    @Override
+    public String toString() {
+        return "{ type: \"" + getTag() + "\", nameIdx: #" + nameIndex + " }";
+    }
+
     public int getNameIdx() {
         return nameIndex;
     }

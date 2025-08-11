@@ -63,7 +63,7 @@ public class Stringify {
             case CONSTANT_UTF8: return ((UTF8CONSTANT) constant).asString();
             case CONSTANT_STRING: return ((StringConstant) constant).getString(pool);
             case CONSTANT_CLASS: return ((ClassConstant) constant).getName(pool);
-            case CONSTANT_INT: return String.valueOf(((IntegerConstant) constant).asInt());
+            case CONSTANT_INT: return String.valueOf(((IntegerConstant) constant).asInteger());
             case CONSTANT_LONG: return String.valueOf(((LongConstant) constant).asLong());
             case CONSTANT_FLOAT: return String.valueOf(((FloatConstant) constant).asFloat());
             case CONSTANT_DOUBLE: return String.valueOf(((DoubleConstant) constant).asDouble());

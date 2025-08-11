@@ -45,4 +45,9 @@ public class FieldRefConstant extends GenericConstant {
     public int getNameAndTypeIndex() {
         return nameAndTypeIndex;
     }
+
+    @Override
+    public String toString() {
+        return "{ type: \"" + getTag() + "\", classIdx: #" + classIndex + ", nameAndTypeIdx: #" + nameAndTypeIndex + " }";
+    }
 }

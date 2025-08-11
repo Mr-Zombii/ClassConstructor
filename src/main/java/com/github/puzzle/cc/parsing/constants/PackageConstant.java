@@ -30,7 +30,12 @@ public class PackageConstant extends GenericConstant {
         return ((UTF8CONSTANT) pool.get(nameIndex)).asString();
     }
 
-    public int getIndex() {
+    public int getNameIndex() {
         return nameIndex;
+    }
+
+    @Override
+    public String toString() {
+        return "{ type: \"" + getTag() + "\", nameIdx: #" + getNameIndex() + " }";
     }
 }
