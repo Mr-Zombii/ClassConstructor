@@ -116,9 +116,17 @@ public class CCWriterUtil {
         SystemLib.use(writer, bytecodeWriter);
         NativeArrays.use(writer, bytecodeWriter);
 
-        NativeTypes.value("Hello World2");
-        NativeTypes.value("Hello World");
+        bytecodeWriter.putInstruction(Opcodes.ALOAD_0);
         SystemLib.println();
+        NativeTypes.value("Hello World2");
+        bytecodeWriter.putInstruction(Opcodes.ASTORE_0);
+        bytecodeWriter.putInstruction(Opcodes.ALOAD_0);
+        SystemLib.println();
+//        NativeTypes.value("HHHH");
+//        NativeTypes.value("HHHH");
+        NativeTypes.value(1236);
+        bytecodeWriter.putInstruction(Opcodes.ASTORE_1);
+        bytecodeWriter.putInstruction(Opcodes.ALOAD_1);
         SystemLib.println();
 
 //        NativeTypes.value(2);

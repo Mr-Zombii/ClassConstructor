@@ -221,14 +221,12 @@ public class ClassWriter {
         CCWriterUtil.test(writer, bytecodeWriter);
         builder.write(bytecodeWriter);
         bytecodeWriter.putInstruction(Opcodes.RETURN);
-//        CodeAttribute attribute = builder.end();
 
-        builder2.addVar(0, 11, "cliArgs", "[Ljava/lang/String;", 0);
-//        attribute.getAttributes().push(builder2.end());
+        builder2.addVar(0, 10, "cliArgs", "[Ljava/lang/String;", 0);
+        builder2.addVar(10, 22, "cliArgs", "[Ljava/lang/String;", 1);
         builder.getAttributes().push(builder2.end());
         CodeAttribute attribute = builder.end();
-//        builder1.addVar(0, 11, "cliArgs", "[Ljava/lang/String;", 0);
-//        builder.getAttributes().push(builder1.end());
+
 
         methodWriter.addAttribute(attribute);
         System.out.println(writer.constantPool);
